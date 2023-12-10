@@ -4,7 +4,9 @@ CG project imitating mouse assembly workshop.
 ## 文件结构说明
 
 ├─build
+
 ├─media
+
 └─src
 
 - build：可执行文件，但需要注意涉及到的各类图像资源的路径问题
