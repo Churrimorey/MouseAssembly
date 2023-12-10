@@ -22,7 +22,7 @@ CG project imitating mouse assembly workshop.
 - 总体场景建构，包括桌子、机械臂、鼠标、鼠标外壳和鼠标底板以及相对的布局
 - 简单的编辑功能。左侧为鼠标外壳、鼠标底板和电池的编辑框，点击便可充满，但是未实现之后开始组装的逻辑，可能需要添加物体的数量进行控制
 
-![workshopScene](.\media\workshopScene.png)
+![workshopScene](./media/workshopScene.png)
 
 ### 遗留问题以及解决思路
 
@@ -32,7 +32,7 @@ CG project imitating mouse assembly workshop.
 
 2. 实现光照。添加光照后，会有较大视觉上的差异。
 
-   ![mouseInLight](.\media\mouseInLight.png)
+   ![mouseInLight](./media/mouseInLight.png)
 
 3. 完善建模。以上两个部分实现后，根据需要完善建模，比如重新在`CAD`软件中进行建模和提取。
 
