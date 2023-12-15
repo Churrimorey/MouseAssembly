@@ -70,8 +70,8 @@ void DrawCircle(float cx, float cy, float cz, float r, int num_segments)
 	//draw the vertex on the contour of the circle   
 	for (int i = 0; i < num_segments; i++)
 	{
-		vertex[0] = std::cos(delta_angle*i) * r + cx;
-		vertex[1] = std::sin(delta_angle*i) * r + cy;
+		vertex[0] = std::cos(delta_angle * i) * r + cx;
+		vertex[1] = std::sin(delta_angle * i) * r + cy;
 		vertex[2] = cz;
 		vertex[3] = 1.0;
 		glVertex4fv(vertex);

@@ -1,10 +1,10 @@
 #include "utils.h"
 
-unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
+unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader)
 {
-	FILE *filePtr;	// 文件指针
+	FILE* filePtr;	// 文件指针
 	BITMAPFILEHEADER bitmapFileHeader;	// bitmap文件头
-	unsigned char	*bitmapImage;		// bitmap图像数据
+	unsigned char* bitmapImage;		// bitmap图像数据
 	int	imageIdx = 0;		// 图像位置索引
 	unsigned char	tempRGB;	// 交换变量
 
@@ -41,7 +41,7 @@ unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader
 
 	//由于bitmap中保存的格式是BGR，下面交换R和B的值，得到RGB格式
 	for (imageIdx = 0;
-	imageIdx < bitmapInfoHeader->biSizeImage; imageIdx += 3) {
+		imageIdx < bitmapInfoHeader->biSizeImage; imageIdx += 3) {
 		tempRGB = bitmapImage[imageIdx];
 		bitmapImage[imageIdx] = bitmapImage[imageIdx + 2];
 		bitmapImage[imageIdx + 2] = tempRGB;
@@ -51,11 +51,11 @@ unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader
 	return bitmapImage;
 }
 
-void texload(int i, char *filename)
+void texload(int i, char* filename)
 {
 
 	BITMAPINFOHEADER bitmapInfoHeader;                                 // bitmap信息头
-	unsigned char*   bitmapData;                                       // 纹理数据
+	unsigned char* bitmapData;                                       // 纹理数据
 
 	bitmapData = LoadBitmapFile(filename, &bitmapInfoHeader);
 	glBindTexture(GL_TEXTURE_2D, texture[i]);

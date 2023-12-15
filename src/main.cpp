@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <gl/glut.h>
+#include <memory>
+#include <vector>
 #include "mouse.h"
 #include "utils.h"
 #include "drawings.h"
@@ -17,12 +19,17 @@ bool bMouseHead = false;
 bool bBattery = false;
 GLint holeList[25];
 GLint batterList[25];
+std::unique_ptr<Robot> left_robot;    // ×ó»úÐµ±Û
+std::unique_ptr<Robot> right_robot;   // ÓÒ»úÐµ±Û
+std::vector<MousePlate> plates;
 
 void init()
 {
 	glGenTextures(2, texture);
 	texload(0, (char*)"table.bmp");
 	texload(1, (char*)"battery.bmp");
+	left_robot.reset(Robot::CreateLeftRobot());
+	right_robot.reset(Robot::CreateRightRobot());
 }
 
 void DrawScene()
@@ -31,10 +38,10 @@ void DrawScene()
 	DrawTable();
 
 	glColor3f(1.0 * 238 / 255, 1.0 * 121 / 255, 1.0 * 66 / 255);
-	DrawLeftRobot();
+	left_robot->DrawRobot();
 
 	glColor3f(1.0 * 238 / 255, 1.0 * 121 / 255, 1.0 * 66 / 255);
-	DrawRightRobot();
+	right_robot->DrawRobot();
 
 	glColor3f(1.0 * 156 / 255, 1.0 * 156 / 255, 1.0 * 156 / 255);
 	DrawDesk();
@@ -46,18 +53,18 @@ void DrawScene()
 		DrawBatterys();
 	}
 
-	DrawMousePlates();
+	MousePlate::DrawPlates(plates);
 
 	if (bMouseHead)
 	{
 		glColor3f(1.0 * 79 / 255, 1.0 * 79 / 255, 1.0 * 79 / 255);
-		DrawMouseHeads();
+		plates[0].DrawMouseHeads();
 	}
 
 	if (bMouseBase)
 	{
 		glColor3f(1.0 * 79 / 255, 1.0 * 79 / 255, 1.0 * 79 / 255);
-		DrawMouseBases();
+		plates[2].DrawMouseBases();
 	}
 
 	glPushMatrix();
@@ -65,7 +72,7 @@ void DrawScene()
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	glScalef(0.2f, 0.2f, 0.2f);
 	glColor3f(1.0 * 79 / 255, 1.0 * 79 / 255, 1.0 * 79 / 255);
-	DrawMouse(0); 
+	Mouse::DrawMouse(0);
 	glPopMatrix();
 }
 
@@ -77,7 +84,7 @@ void DrawEditBar()
 	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
 	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	DrawMouse(1);
+	Mouse::DrawMouse(1);
 	glPopMatrix();
 
 	glPushMatrix();
@@ -86,11 +93,11 @@ void DrawEditBar()
 	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
 	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	DrawMouse(2);
+	Mouse::DrawMouse(2);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(-3.6f,-0.05f, 0.0f);
+	glTranslatef(-3.6f, -0.05f, 0.0f);
 	glScalef(0.5f, 1.0f, 0.5f);
 	DrawBattery();
 	glPopMatrix();
@@ -110,23 +117,23 @@ void DrawEditBar()
 
 void reshape(int width, int height)
 {
-	if (height == 0)										
+	if (height == 0)
 	{
-		height = 1;										
+		height = 1;
 	}
 
 	gHeight = height;
 	gWidth = width;
 
-	/*glViewport(0, 0, width, height);						
+	/*glViewport(0, 0, width, height);
 
-	glMatrixMode(GL_PROJECTION);						
-	glLoadIdentity();									
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 
 	float whRatio = (GLfloat)width / (GLfloat)height;
 	gluPerspective(45, whRatio, 1, 1000);
 
-	glMatrixMode(GL_MODELVIEW);		*/					
+	glMatrixMode(GL_MODELVIEW);		*/
 }
 
 void idle()
@@ -143,12 +150,12 @@ void key(unsigned char k, int x, int y)
 
 	case '+':
 	{
-		
+
 		break;
 	}
 	case '-':
 	{
-		
+
 		break;
 	}
 	default: break;
@@ -181,7 +188,7 @@ void Mouse(int button, int state, int x, int y)
 void redraw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();													
+	glLoadIdentity();
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -196,7 +203,7 @@ void redraw()
 	gluLookAt(eye[0], eye[1], eye[2],
 		center[0], center[1], center[2],
 		0, 1, 0);
-	
+
 	glTranslatef(0.8f, 0.0f, 0.0f);
 	glScalef(0.4, 0.4, 0.4);
 	DrawScene();
@@ -216,13 +223,13 @@ void redraw()
 		0, 1, 0);
 
 	DrawEditBar();
-	
+
 	glPopMatrix();
 
 	glutSwapBuffers();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);

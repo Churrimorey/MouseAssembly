@@ -2,7 +2,7 @@
 
 //const float g_lightPos[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 
-short face_indicies[48748][3] = {
+short Mouse::face_indicies[48748][3] = {
 	{ 0, 1, 2 },
 	{ 0, 2, 3 },
 	{ 3, 2, 4 },
@@ -82175,7 +82175,7 @@ GLfloat normals[23153][3] = {
 	{ 0.736833, -0.539662, -0 }
 };
 
-void DrawMouse(int num)
+void Mouse::DrawMouse(int num)
 {
 	unsigned int i;
 	int j;
@@ -82185,7 +82185,7 @@ void DrawMouse(int num)
 		if (vertices[face_indicies[i][0]][1] > -0.8f && vertices[face_indicies[i][1]][1] > -0.8f && vertices[face_indicies[i][2]][1] > -0.8f)
 		{
 			//without head
-			if(num == 1)
+			if (num == 1)
 				continue;
 		}
 		else
@@ -82214,99 +82214,56 @@ void DrawMouse(int num)
 	glEnd();
 }
 
-void DrawMousePlates()
-{
+void MousePlate::DrawMousePlates() const {
 	glPushMatrix();
-
-	glPushMatrix();
-	glTranslatef(-5.0f, -3.0f, 4.0f);
+	glTranslatef(position_.GetX(), position_.GetY(), position_.GetZ());
 	glScalef(6.0f, 0.1, 3.0f);
 	glutSolidCube(1);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(5.0f, -3.0f, 4.0f);
-	glScalef(6.0f, 0.1, 3.0f);
-	glutSolidCube(1);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(5.0f, -3.0f, -3.0f);
-	glScalef(6.0f, 0.1, 3.0f);
-	glutSolidCube(1);
-	glPopMatrix();
-
 	glPopMatrix();
 }
 
-void DrawMouseHeads()
-{
+void Mouse::Draw() const {
 	glPushMatrix();
-	glTranslatef(2.5f, -2.5f, -2.5f);
+	glTranslatef(position_.GetX(), position_.GetY(), position_.GetZ());
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(2);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(4.0f, -2.5f, -2.5f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(2);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(5.5f, -2.5f, -2.5f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(2);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(7.0f, -2.5f, -2.5f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(2);
+	DrawMouse(static_cast<int>(type_));
 	glPopMatrix();
 }
 
-void DrawMouseBases()
-{
-	glPushMatrix();
-	glTranslatef(-3.0f, -2.5f, 4.0f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(1);
-	glPopMatrix();
+void MousePlate::DrawMouseHeads() {
+	mouse_.emplace_back(Vec3{ 2.5f, -2.5f, -2.5f }, Mouse::Type::HEAD);
+	mouse_.emplace_back(Vec3{ 4.0f, -2.5f, -2.5f }, Mouse::Type::HEAD);
+	mouse_.emplace_back(Vec3{ 5.5f, -2.5f, -2.5f }, Mouse::Type::HEAD);
+	mouse_.emplace_back(Vec3{ 7.0f, -2.5f, -2.5f }, Mouse::Type::HEAD);
+	
+	for (auto& head : mouse_) {
+		head.Draw();
+	}
+}
 
-	glPushMatrix();
-	glTranslatef(-4.5f, -2.5f, 4.0f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(1);
-	glPopMatrix();
+void MousePlate::DrawMouseBases() {
+	mouse_.emplace_back(Vec3{ -3.0f, -2.5f, 4.0f }, Mouse::Type::BASE);
+	mouse_.emplace_back(Vec3{ -4.5f, -2.5f, 4.0f }, Mouse::Type::BASE);
+	mouse_.emplace_back(Vec3{ -6.0f, -2.5f, 4.0f }, Mouse::Type::BASE);
+	mouse_.emplace_back(Vec3{ -7.5f, -2.5f, 4.0f }, Mouse::Type::BASE);
 
-	glPushMatrix();
-	glTranslatef(-6.0f, -2.5f, 4.0f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(1);
-	glPopMatrix();
+	for (auto& head : mouse_) {
+		head.Draw();
+	}
+}
 
+void MousePlate::DrawPlates(std::vector<MousePlate>& plates) {
 	glPushMatrix();
-	glTranslatef(-7.5f, -2.5f, 4.0f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(1);
-	glPopMatrix();
 
-	/*glPushMatrix();
-	glTranslatef(0.0f, -0.5f, 3.8f);
-	glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	DrawMouse(1);
-	glPopMatrix();*/
+	plates.emplace_back(Vec3{ -5.0f, -3.0f, 4.0f });
+	plates.emplace_back(Vec3{ 5.0f, -3.0f, 4.0f });
+	plates.emplace_back(Vec3{ 5.0f, -3.0f, -3.0f });
+	for (auto& plate : plates) {
+		plate.DrawMousePlates();
+	}
+
+	glPopMatrix();
 }
 
 //glClearColor(0.2, 0.55, 1.0, 1);

@@ -9,7 +9,7 @@
 
 extern unsigned int texture[2];
 
-unsigned char *LoadBitmapFile(char *filename, BITMAPINFOHEADER *bitmapInfoHeader);
-void texload(int i, char *filename);
+unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader);
+void texload(int i, char* filename);
 
 #endif

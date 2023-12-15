@@ -1,7 +1,10 @@
 #include "robot.h"
+#include <gl/gl.h>
 
-void DrawRobotBase()
-{
+void RobotBase::Draw() const {
+	const auto& position = GetPosition();
+	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
+
 	glPushMatrix();
 	GLUquadricObj* cone = gluNewQuadric();
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
@@ -12,10 +15,16 @@ void DrawRobotBase()
 	gluDeleteQuadric(cone);
 
 	glPopMatrix();
+	if (GetNext() != nullptr) {
+		GetNext()->Draw();
+	}
 }
 
-void DrawRobotArm()
-{
+void RobotArm::Draw() const {
+	const auto& position = GetPosition();
+	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
+	glRotatef(rotate_, 0.0f, 0.0f, 1.0f);
+
 	GLfloat cone_mat[] =
 	{ 0.f, .5f, 1.f, 1.f };
 
@@ -29,69 +38,54 @@ void DrawRobotArm()
 	DrawCircle(0.0f, 0.0f, 0.0f, 1.3f, 10);
 	gluDeleteQuadric(cylinder);
 	glPopMatrix();
+	if (GetNext() != nullptr) {
+		GetNext()->Draw();
+	}
 }
 
-void DrawRobotFinger()
-{
+void RobotFinger::Draw() const {
+	glPushMatrix();
+	const auto& position = GetPosition();
+	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
 	glPushMatrix();
 	glColor3f(1.0 * 139 / 255, 1.0 * 139 / 255, 1.0 * 122 / 255);
 	glScalef(0.3f, 1.2f, 0.1f);
 	glutSolidCube(1.0f);
 	glPopMatrix();
+	glPopMatrix();
+	if (GetNext() != nullptr) {
+		GetNext()->Draw();
+	}
 }
 
-void DrawLeftRobot()
-{
+void Robot::DrawRobot() const {
 	glPushMatrix();
-
-	glTranslatef(-6.5f, -2.5f, 1.0f);
-	DrawRobotBase();
-
-	glTranslatef(0.0f, 0.8f, 0.0f);
-	glRotatef(-23.0f, 0.0f, 0.0f, 1.0f);
-	DrawRobotArm();
-
-	glTranslatef(0.0f, 4.5f, 0.0f);
-	glRotatef(-123.0f, 0.0f, 0.0f, 1.0f);
-	DrawRobotArm();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 4.8f, -0.6f);
-	DrawRobotFinger();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 4.8f, 0.6f);
-	DrawRobotFinger();
-	glPopMatrix();
-
+	Draw();
 	glPopMatrix();
 }
 
-void DrawRightRobot()
-{
-	glPushMatrix();
+Robot* Robot::CreateLeftRobot() {
+	Robot* root = new RobotBase({ -6.5f, -2.5f, 1.0f });
+	auto robot = root;
+	robot->SetNext(new RobotArm({ 0.0f, 0.8f, 0.0f }, -23.0f));
+	robot = robot->GetNext();
+	robot->SetNext(new RobotArm({ 0.0f, 4.5f, 0.0f }, -123.0));
+	robot = robot->GetNext();
+	robot->SetNext(new RobotFinger({ 0.0f, 4.8f, -0.6f }));
+	robot = robot->GetNext();
+	robot->SetNext(new RobotFinger({ 0.0f, 4.8f, 0.6f }));
+	return root;
+}
 
-	glTranslatef(6.5f, -2.5f, 1.0f);
-	DrawRobotBase();
-
-	glTranslatef(0.0f, 0.8f, 0.0f);
-	glRotatef(23.0f, 0.0f, 0.0f, 1.0f);
-	DrawRobotArm();
-
-	glTranslatef(0.0f, 4.5f, 0.0f);
-	glRotatef(123.0f, 0.0f, 0.0f, 1.0f);
-	DrawRobotArm();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 4.8f, -0.6f);
-	DrawRobotFinger();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 4.8f, 0.6f);
-	DrawRobotFinger();
-	glPopMatrix();
-
-	glPopMatrix();
+Robot* Robot::CreateRightRobot() {
+	Robot* root = new RobotBase({ 6.5f, -2.5f, 1.0f });
+	auto robot = root;
+	robot->SetNext(new RobotArm({ 0.0f, 0.8f, 0.0f }, 23.0f));
+	robot = robot->GetNext();
+	robot->SetNext(new RobotArm({ 0.0f, 4.5f, 0.0f }, 123.0));
+	robot = robot->GetNext();
+	robot->SetNext(new RobotFinger({ 0.0f, 4.8f, -0.6f }));
+	robot = robot->GetNext();
+	robot->SetNext(new RobotFinger({ 0.0f, 4.8f, 0.6f }));
+	return root;
 }
