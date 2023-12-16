@@ -1,5 +1,51 @@
 #include "utils.h"
 
+#ifdef MACOS
+unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader) {
+    FILE *filePtr;
+    BITMAPFILEHEADER bitmapFileHeader;
+    unsigned char *bitmapImage;
+    int imageIdx = 0;
+    unsigned char tempRGB;
+
+    filePtr = fopen(filename, "rb");
+    if (filePtr == NULL) return NULL;
+
+    fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+    if (bitmapFileHeader.bfType != BITMAP_ID) {
+        fprintf(stderr, "Error in LoadBitmapFile: the file is not a bitmap file\n");
+        fclose(filePtr);
+        return NULL;
+    }
+
+    fread(bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
+    fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
+    bitmapImage = (unsigned char *)malloc(bitmapInfoHeader->biSizeImage);
+    if (!bitmapImage) {
+        fprintf(stderr, "Error in LoadBitmapFile: memory error\n");
+        fclose(filePtr);
+        return NULL;
+    }
+
+    fread(bitmapImage, 1, bitmapInfoHeader->biSizeImage, filePtr);
+    if (bitmapImage == NULL) {
+        fprintf(stderr, "Error in LoadBitmapFile: memory error\n");
+        fclose(filePtr);
+        return NULL;
+    }
+
+	if (bitmapInfoHeader->biBitCount == 24) {
+		for (imageIdx = 0; imageIdx < bitmapInfoHeader->biSizeImage; imageIdx += 3) {
+			tempRGB = bitmapImage[imageIdx];
+			bitmapImage[imageIdx] = bitmapImage[imageIdx + 2];
+			bitmapImage[imageIdx + 2] = tempRGB;
+		}
+	}
+
+    fclose(filePtr);
+    return bitmapImage;
+}
+#else
 unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader)
 {
 	FILE* filePtr;	// ÎÄ¼þÖ¸Õë
@@ -50,6 +96,7 @@ unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader
 	fclose(filePtr);
 	return bitmapImage;
 }
+#endif
 
 void texload(int i, char* filename)
 {

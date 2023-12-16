@@ -1,5 +1,4 @@
 #include "robot.h"
-#include <gl/gl.h>
 
 void RobotBase::Draw() const {
 	const auto& position = GetPosition();
