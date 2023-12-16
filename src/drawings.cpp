@@ -278,158 +278,48 @@ void DrawHoles()
 	glPopMatrix();
 }
 
-void DrawBattery()
-{
-	GLfloat cone_mat[] =
-	{ 0.f, .5f, 1.f, 1.f };
+const GLfloat Battery::cone_mat[] =
+{ 0.f, .5f, 1.f, 1.f };
 
+GLUquadricObj* Battery::cylinder = gluNewQuadric();
+
+const float Battery::positions[][3] = { {-1.2f, 0.0f, -1.2f}, {-0.6f, 0.0f, -1.2f}, {0.0f, 0.0f, -1.2f},
+	{0.6f, 0.0f, -1.2f}, {1.2f, 0.0f, -1.2f}, {-1.2f, 0.0f, -0.6f}, {-0.6f, 0.0f, -0.6f}, {0.0f, 0.0f, -0.6f},
+	{0.6f, 0.0f, -0.6f}, {1.2f, 0.0f, -0.6f}, {-1.2f, 0.0f, 0.0f}, {-0.6f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
+	{0.6f, 0.0f, 0.0f}, {1.2f, 0.0f, 0.0f}, {-1.2f, 0.0f, 0.6f}, {-0.6f, 0.0f, 0.6f}, {0.0f, 0.0f, 0.6f},
+	{0.6f, 0.0f, 0.6f}, {1.2f, 0.0f, 0.6f}, {-1.2f, 0.0f, 1.2f}, {-0.6f, 0.0f, 1.2f}, {0.0f, 0.0f, 1.2f},
+	{0.6f, 0.0f, 1.2f}, {1.2f, 0.0f, 1.2f} };
+
+void Battery::Draw() const {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	glPushMatrix();
-	GLUquadricObj* cylinder = gluNewQuadric();
+	glTranslatef(position_.GetX(), position_.GetY(), position_.GetZ());
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cone_mat);
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 	glScalef(0.6f, 0.6f, 0.6f);
 	gluCylinder(cylinder, 0.3, 0.3, 1.0, 10, 10);
 	DrawCircle(0.0f, 0.0f, 1.0f, 0.3f, 10);
-	gluDeleteQuadric(cylinder);
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 }
 
-void DrawBatterys()
-{
+void Battery::DrawBatterys(std::vector<Battery>& batteries) {
+	for (auto& position : positions) {
+		batteries.emplace_back(Vec3{ position[0], position[1], position[2] });
+	}
+
 	glPushMatrix();
 	glTranslatef(0.0f, -3.0f, 0.0f);
 
-	glPushMatrix();
-	glTranslatef(-1.2f, 0.0f, -1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-0.6f, 0.0f, -1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, -1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.6f, 0.0f, -1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.2f, 0.0f, -1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.2f, 0.0f, -0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-0.6f, 0.0f, -0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, -0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.6f, 0.0f, -0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.2f, 0.0f, -0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.2f, 0.0f, 0.0f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-0.6f, 0.0f, 0.0f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, 0.0f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.6f, 0.0f, 0.0f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.2f, 0.0f, 0.0f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.2f, 0.0f, 0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-0.6f, 0.0f, 0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, 0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.6f, 0.0f, 0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.2f, 0.0f, 0.6f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.2f, 0.0f, 1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-0.6f, 0.0f, 1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, 1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.6f, 0.0f, 1.2f);
-	DrawBattery();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.2f, 0.0f, 1.2f);
-	DrawBattery();
-	glPopMatrix();
+	for (auto& battery : batteries) {
+		battery.Draw();
+	}
 
 	glPopMatrix();
 }
+
 
 void DrawBox()
 {

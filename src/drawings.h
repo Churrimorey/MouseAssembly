@@ -3,6 +3,8 @@
 
 #include <gl/glut.h>
 #include <cmath>
+#include <vector>
+#include "Vec3.h"
 
 #define PI 3.14159
 
@@ -17,10 +19,31 @@ void DrawCuboid(double cx, double cy, double cz, double halfX, double frontY, do
 void DrawDesk();
 void DrawHole();
 void DrawHoles();
-void DrawBattery();
-void DrawBatterys();
 void DrawBox();
 void GenHoleList();
 void DrawHoleList();
+
+class Battery {
+public:
+	static const GLfloat cone_mat[];
+
+	static GLUquadricObj* cylinder;
+
+	static const float positions[][3];
+
+	static void DrawBatterys(std::vector<Battery>& batteries);
+
+	static void DrawBattery(float x, float y, float z) {
+		Battery battery(Vec3{ x, y, z });
+		battery.Draw();
+	}
+
+	Battery(const Vec3 &position) : position_(position) {}
+
+	void Draw() const;
+
+private:
+	Vec3 position_;
+};
 
 #endif

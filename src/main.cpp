@@ -22,6 +22,7 @@ GLint batterList[25];
 std::unique_ptr<Robot> left_robot;    // ×ó»úÐµ±Û
 std::unique_ptr<Robot> right_robot;   // ÓÒ»úÐµ±Û
 std::vector<MousePlate> plates;
+std::vector<Battery> battries;
 
 void init()
 {
@@ -50,7 +51,7 @@ void DrawScene()
 
 	if (bBattery)
 	{
-		DrawBatterys();
+		Battery::DrawBatterys(battries);
 	}
 
 	MousePlate::DrawPlates(plates);
@@ -99,7 +100,7 @@ void DrawEditBar()
 	glPushMatrix();
 	glTranslatef(-3.6f, -0.05f, 0.0f);
 	glScalef(0.5f, 1.0f, 0.5f);
-	DrawBattery();
+	Battery::DrawBattery(0, 0, 0);
 	glPopMatrix();
 
 	glLineWidth(2.0f);
