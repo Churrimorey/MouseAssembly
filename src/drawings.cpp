@@ -1,4 +1,5 @@
 #include "drawings.h"
+#include "material.h"
 
 void Texture_desk()
 {
@@ -123,11 +124,7 @@ void DrawCuboid(double cx, double cy, double cz, double halfX, double frontY, do
 
 void DrawDesk()
 {
-	GLfloat mat[] =
-	{ 0.f, .5f, 1.f, 1.f };
-
 	glPushMatrix();
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat);
 	glTranslatef(0.0f, -2.5f, 3.5f);
 	DrawCuboid(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 2.0f, 1.0f);
 	glPopMatrix();
@@ -135,15 +132,10 @@ void DrawDesk()
 
 void DrawHole()
 {
-	GLfloat cone_mat[] =
-	{ 0.f, .5f, 1.f, 1.f };
-
 	glPushMatrix();
 	GLUquadricObj* cylinder = gluNewQuadric();
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cone_mat);
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 	glScalef(0.6f, 0.6f, 0.6f);
-	glColor3f(1.0f * 207 / 255, 1.0f * 207 / 255, 1.0f * 207 / 255);
 	gluCylinder(cylinder, 0.3, 0.3, 0.5, 10, 10);
 	DrawCircle(0.0f, 0.0f, 0.5f, 0.3f, 10);
 	gluDeleteQuadric(cylinder);
@@ -296,7 +288,6 @@ void Battery::Draw() const {
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	glPushMatrix();
 	glTranslatef(position_.GetX(), position_.GetY(), position_.GetZ());
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cone_mat);
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 	glScalef(0.6f, 0.6f, 0.6f);
 	gluCylinder(cylinder, 0.3, 0.3, 1.0, 10, 10);
@@ -328,7 +319,6 @@ void DrawBox()
 	//DrawHoles();
 	DrawHoleList();
 	glScalef(3.0f, 0.5f, 3.0f);
-	glColor3f(1.0f * 176 / 255, 1.0f * 226 / 255, 1.0f);
 	glutSolidCube(1);
 	glPopMatrix();
 }

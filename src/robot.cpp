@@ -1,10 +1,12 @@
 #include "robot.h"
+#include "material.h"
 
 void RobotBase::Draw() const {
 	const auto& position = GetPosition();
 	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
 
 	glPushMatrix();
+	Material::SetMaterial(Material::Base);
 	GLUquadricObj* cone = gluNewQuadric();
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 	glScalef(0.6f, 0.6f, 0.6f);
@@ -24,12 +26,9 @@ void RobotArm::Draw() const {
 	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
 	glRotatef(rotate_, 0.0f, 0.0f, 1.0f);
 
-	GLfloat cone_mat[] =
-	{ 0.f, .5f, 1.f, 1.f };
-
 	glPushMatrix();
+	Material::SetMaterial(Material::Arm);
 	GLUquadricObj* cylinder = gluNewQuadric();
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cone_mat);
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 	glScalef(0.6f, 0.6f, 0.6f);
 	gluCylinder(cylinder, 1.3, 1.3, 7.0, 10, 10);
@@ -47,7 +46,7 @@ void RobotFinger::Draw() const {
 	const auto& position = GetPosition();
 	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
 	glPushMatrix();
-	glColor3f(1.0 * 139 / 255, 1.0 * 139 / 255, 1.0 * 122 / 255);
+	Material::SetMaterial(Material::Finger);
 	glScalef(0.3f, 1.2f, 0.1f);
 	glutSolidCube(1.0f);
 	glPopMatrix();

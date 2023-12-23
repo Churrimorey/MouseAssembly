@@ -8,6 +8,8 @@
 #include "utils.h"
 #include "drawings.h"
 #include "robot.h"
+#include "light.h"
+#include "material.h"
 
 int gHeight;
 int gWidth;
@@ -26,36 +28,53 @@ std::vector<Battery> battries;
 
 void init()
 {
+	GLint buf[1], sbuf[1];
+	glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
+	glGetIntegerv(GL_SAMPLES_ARB, sbuf);
+	glEnable(GL_MULTISAMPLE_ARB);
+
 	glGenTextures(2, texture);
 	texload(0, (char*)"table.bmp");
 	texload(1, (char*)"battery.bmp");
 	left_robot.reset(Robot::CreateLeftRobot());
 	right_robot.reset(Robot::CreateRightRobot());
+
+	Light::InitLight();
+	Material::InitMaterial();
 }
 
 void DrawScene()
 {
-	glColor3f(1.0 * 220 / 255, 1.0 * 220 / 255, 1.0 * 220 / 255);
+	Light::SetLightPosition(1, 0.0, -0.5, 4.0, 1.0);
+	Light::SetLightType(1, Light::PointLight);
+	Light::TurnOnLight(1); 
+	Light::TurnOnLight(0);
+
+	// Material::SetMaterial(Material::Unknown);
+	// glPushMatrix();
+	// glTranslatef(0.0f, -0.5f, 4.0f);
+	// glutSolidCube(0.5);
+	// glPopMatrix();
+
 	DrawTable();
 
-	glColor3f(1.0 * 238 / 255, 1.0 * 121 / 255, 1.0 * 66 / 255);
 	left_robot->DrawRobot();
 
-	glColor3f(1.0 * 238 / 255, 1.0 * 121 / 255, 1.0 * 66 / 255);
 	right_robot->DrawRobot();
 
-	glColor3f(1.0 * 156 / 255, 1.0 * 156 / 255, 1.0 * 156 / 255);
+	Material::SetMaterial(Material::Desk);
 	DrawDesk();
 
+	Material::SetMaterial(Material::Box);
 	DrawBox();
 
 	if (bBattery)
 	{
 		Battery::DrawBatterys(battries);
 	}
-
+	Material::SetMaterial(Material::Plate);
 	MousePlate::DrawPlates(plates);
-
+	Material::SetMaterial(Material::Mouse);
 	if (bMouseHead)
 	{
 		glColor3f(1.0 * 79 / 255, 1.0 * 79 / 255, 1.0 * 79 / 255);
@@ -72,7 +91,6 @@ void DrawScene()
 	glTranslatef(3.0f, -2.5f, 4.0f);
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	glScalef(0.2f, 0.2f, 0.2f);
-	glColor3f(1.0 * 79 / 255, 1.0 * 79 / 255, 1.0 * 79 / 255);
 	Mouse::DrawMouse(0);
 	glPopMatrix();
 }
@@ -233,7 +251,7 @@ void redraw()
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(800, 480);
 	int windowHandle = glutCreateWindow("Mouse Assembly Workshop");
 
