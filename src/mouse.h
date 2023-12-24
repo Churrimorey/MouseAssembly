@@ -9,14 +9,17 @@ class Mouse {
 public:
 	enum class Type { HEAD = 1, BASE };
 
+	Mouse() = default;
+
 	Mouse(const Vec3 & position, Type type) : position_(position), type_(type) {}
 
 	void Draw() const;
 
+	const Vec3& GetPosition() const { return position_; }
+
 	static void DrawMouse(int num);
 
 private:
-
 	static short face_indicies[][3];
 	Vec3 position_;
 	Type type_;
