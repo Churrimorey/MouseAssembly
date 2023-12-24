@@ -38,7 +38,11 @@ public:
 		battery.Draw();
 	}
 
+	Battery() = default;
+
 	Battery(const Vec3 &position) : position_(position) {}
+
+	const Vec3& GetPosition() const { return position_; }
 
 	void Draw() const;
 

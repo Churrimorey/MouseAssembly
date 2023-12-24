@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <gl/glut.h>
+#include <iostream>
 #include <memory>
 #include <vector>
 #include "mouse.h"
@@ -10,6 +11,7 @@
 #include "robot.h"
 #include "light.h"
 #include "material.h"
+#include "clock.h"
 
 int gHeight;
 int gWidth;
@@ -21,10 +23,11 @@ bool bMouseHead = false;
 bool bBattery = false;
 GLint holeList[25];
 GLint batterList[25];
-std::unique_ptr<Robot> left_robot;    // ×ó»úÐµ±Û
-std::unique_ptr<Robot> right_robot;   // ÓÒ»úÐµ±Û
+std::unique_ptr<Robot> left_robot;    // ï¿½ï¿½ï¿½Ðµï¿½ï¿½
+std::unique_ptr<Robot> right_robot;   // ï¿½Ò»ï¿½Ðµï¿½ï¿½
 std::vector<MousePlate> plates;
 std::vector<Battery> battries;
+Clock myclock{ true };
 
 void init()
 {
@@ -226,6 +229,27 @@ void redraw()
 	glTranslatef(0.8f, 0.0f, 0.0f);
 	glScalef(0.4, 0.4, 0.4);
 	DrawScene();
+	myclock.update();
+	if (!plates[2].GetMouses().empty()) {
+		if (Robot::UpdateLeftPositionToMouse(*left_robot, plates[2].GetMouses()[0], myclock.GetElapsedTime())) {
+			std::cout << true << std::endl;
+			plates[2].GetMouses().erase(plates[2].GetMouses().begin());
+		}
+	}
+	if (!plates[0].GetMouses().empty()) {
+		if (Robot::UpdateRightPositionToMouse(*right_robot, plates[0].GetMouses()[0], myclock.GetElapsedTime())) {
+			std::cout << true << std::endl;
+			plates[0].GetMouses().erase(plates[0].GetMouses().begin());
+		}
+	}
+	if (!batteries.empty()) {
+		if (Robot::UpdateLeftPositionToBattery(*left_robot, Robot::GetClosestBattery(*left_robot, batteries), myclock.GetElapsedTime())) {
+			std::cout << true << std::endl;
+		}
+		if (Robot::UpdateRightPositionToBattery(*right_robot, Robot::GetClosestBattery(*right_robot, batteries), myclock.GetElapsedTime())) {
+			std::cout << true << std::endl;
+		}
+	}
 	glPopMatrix();
 
 	glPushMatrix();
