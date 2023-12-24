@@ -13,3 +13,11 @@ void set_fv::set_4fv(GLfloat* arr, uint32_t color) {
         arr[2] = 1.0f * (color & 0xff) / 255;
         arr[3] = 1.0f;
 }
+
+GLfloat* set_fv::coeff_4fv(GLfloat* arr, GLfloat coeff) {
+    GLfloat* ret = new GLfloat[4];
+    for (int i = 0; i < 3; i++) {
+        ret[i] = arr[i] * coeff;
+    }
+    return ret;
+}

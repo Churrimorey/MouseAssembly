@@ -1,5 +1,6 @@
 #pragma once
 #include <gl/glut.h>
+#include "menu.h"
 
 class Light {
 public:
@@ -14,7 +15,8 @@ private:
 
     static GLfloat light_position_[light_num_max][4];
     static enum LightType light_type_[light_num_max];
-    static GLfloat light_direction_[light_num_max][3];
+    static GLfloat light_brightness_[light_num_max];
+    static bool light_on_[light_num_max];
 
     // 设置不同类型灯光的效果
     static GLfloat light_ambient_[LightType::Count][4];
@@ -22,9 +24,11 @@ private:
     static GLfloat light_specular_[LightType::Count][4];
 
 public:
-    static void InitLight();
+    static void InitLight(Menu& menu);
+    static void FlushLight();
     static void TurnOnLight(int light_id);
-    static void SetLightPosition(int light_id, float x, float y, float z, float w);
+    static void MoveLightPosition(int light_id, float x, float y, float z, float w);
     static void SetLightType(int light_id, enum LightType type);
+    static void AdjLightBrightness(int light_id, GLfloat dx);
     static void TurnOffLight(int light_id);
 };

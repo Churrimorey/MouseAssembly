@@ -10,6 +10,7 @@
 #include "robot.h"
 #include "light.h"
 #include "material.h"
+#include "menu.h"
 
 int gHeight;
 int gWidth;
@@ -25,6 +26,7 @@ std::unique_ptr<Robot> left_robot;    // ×ó»úÐµ±Û
 std::unique_ptr<Robot> right_robot;   // ÓÒ»úÐµ±Û
 std::vector<MousePlate> plates;
 std::vector<Battery> battries;
+Menu menu(1);
 
 void init()
 {
@@ -39,22 +41,14 @@ void init()
 	left_robot.reset(Robot::CreateLeftRobot());
 	right_robot.reset(Robot::CreateRightRobot());
 
-	Light::InitLight();
+	Light::InitLight(menu);
 	Material::InitMaterial();
 }
 
 void DrawScene()
 {
-	Light::SetLightPosition(1, 0.0, -0.5, 4.0, 1.0);
-	Light::SetLightType(1, Light::PointLight);
-	Light::TurnOnLight(1); 
-	Light::TurnOnLight(0);
-
-	// Material::SetMaterial(Material::Unknown);
-	// glPushMatrix();
-	// glTranslatef(0.0f, -0.5f, 4.0f);
-	// glutSolidCube(0.5);
-	// glPopMatrix();
+	Material::SetMaterial(Material::Unknown);
+	Light::FlushLight();
 
 	DrawTable();
 
@@ -185,6 +179,8 @@ void Mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
+		if (menu.Hit(x, gHeight - y))
+			return;
 		printf("%d %d\n", x, y);
 		if (x <= 110)
 		{
@@ -215,7 +211,7 @@ void redraw()
 	glViewport(80, 0, gWidth - 80, gHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	float whRatio = (GLfloat)gWidth / (GLfloat)gHeight;
+	float whRatio = (GLfloat)(gWidth - 80) / (GLfloat)gHeight;
 	gluPerspective(45, whRatio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
@@ -243,6 +239,15 @@ void redraw()
 
 	DrawEditBar();
 
+	glPopMatrix();
+
+	glPushMatrix();
+	glViewport(0, 0, gWidth, gHeight);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, gWidth, 0, gHeight);
+	glMatrixMode(GL_MODELVIEW);
+	menu.Draw(0, 0);
 	glPopMatrix();
 
 	glutSwapBuffers();
