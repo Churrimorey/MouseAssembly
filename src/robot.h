@@ -4,9 +4,21 @@
 #include <gl/glut.h>
 #include "drawings.h"
 #include "Vec3.h"
+#include "mouse.h"
+
+class RobotArm;
+class RobotBase;
 
 class Robot {
 public:
+    static Mouse left_mouse_;
+
+    static Mouse right_mouse_;
+
+    static Battery left_battery_;
+
+    static Battery right_battery_;
+
     explicit Robot(const Vec3& position, Robot* next = nullptr) : position_(position), next_(next) {}
 
     virtual ~Robot() { delete next_; }
@@ -16,6 +28,8 @@ public:
     static Robot* CreateRightRobot();
 
     const Vec3& GetPosition() const { return position_; }
+
+    void SetPosition(const Vec3& position) { position_ = position; }
 
     void SetNext(Robot* next) { next_ = next; }
 
@@ -27,6 +41,24 @@ public:
 
     void DrawRobot() const;
 
+    static Battery& GetClosestBattery(Robot& robot, std::vector<Battery>& batteries);
+
+    static bool UpdateLeftPositionToMouse(Robot &robot, const Mouse& destination, double elapsed_time);
+
+    static bool UpdateLeftPositionToBattery(Robot& robot, const Battery& destination, double elapsed_time);
+
+    static bool UpdateRightPositionToMouse(Robot& robot, const Mouse& destination, double elapsed_time);
+
+    static bool UpdateRightPositionToBattery(Robot& robot, const Battery& destination, double elapsed_time);
+
+    static void UpdateLeftPositionToMouse(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateRightPositionToMouse(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateLeftPositionToBattery(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateRightPositionToBattery(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
 private:
     Vec3 position_;
     Robot* next_;
@@ -34,20 +66,40 @@ private:
 
 class RobotBase : public Robot {
 public:
-    explicit RobotBase(const Vec3& position, Robot* next = nullptr) : Robot(position, next) {}
+    static GLUquadricObj* cone;
+
+    RobotBase(const Vec3& position, float rotate, Robot* next = nullptr) : Robot(position, next), rotate_(rotate) {}
 
     void Draw() const override;
+
+    float GetRotate() const { return rotate_; }
+
+    void SetRotate(float rotate) { rotate_ = rotate; }
+
+private:
+    float rotate_;
 };
 
 class RobotArm : public Robot {
 public:
-    explicit RobotArm(const Vec3& position, float rotate, Robot* next = nullptr) : Robot(position, next), rotate_(rotate) {}
+    static GLfloat cone_mat[];
+
+    static GLUquadricObj* cylinder;
+
+    explicit RobotArm(const Vec3& position, float rotate, Robot* next = nullptr) : Robot(position, next), prev_(nullptr), rotate_(rotate) {}
 
     void Draw() const override;
 
     void SetRotate(float rotate) { rotate_ = rotate; }
 
+    float GetRotate() const { return rotate_;  }
+
+    void SetPrev(Robot* prev) { prev_ = prev; }
+
+    Vec3 GetLocalPosition() const;
+
 private:
+    Robot* prev_;
     float rotate_;
 };
 
