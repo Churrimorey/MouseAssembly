@@ -1,6 +1,11 @@
 #include "robot.h"
 #include "material.h"
 
+Mouse Robot::left_mouse_;
+Mouse Robot::right_mouse_;
+Battery Robot::left_battery_;
+Battery Robot::right_battery_;
+
 void RobotBase::Draw() const {
 	const auto& position = GetPosition();
 	glTranslatef(position.GetX(), position.GetY(), position.GetZ());

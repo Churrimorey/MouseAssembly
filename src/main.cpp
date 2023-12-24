@@ -238,11 +238,11 @@ void redraw()
 			plates[0].GetMouses().erase(plates[0].GetMouses().begin());
 		}
 	}
-	if (!batteries.empty()) {
-		if (Robot::UpdateLeftPositionToBattery(*left_robot, Robot::GetClosestBattery(*left_robot, batteries), myclock.GetElapsedTime())) {
+	if (!battries.empty()) {
+		if (Robot::UpdateLeftPositionToBattery(*left_robot, Robot::GetClosestBattery(*left_robot, battries), myclock.GetElapsedTime())) {
 			std::cout << true << std::endl;
 		}
-		if (Robot::UpdateRightPositionToBattery(*right_robot, Robot::GetClosestBattery(*right_robot, batteries), myclock.GetElapsedTime())) {
+		if (Robot::UpdateRightPositionToBattery(*right_robot, Robot::GetClosestBattery(*right_robot, battries), myclock.GetElapsedTime())) {
 			std::cout << true << std::endl;
 		}
 	}
