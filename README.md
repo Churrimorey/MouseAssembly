@@ -13,7 +13,7 @@ CG project imitating mouse assembly workshop.
 
   + 在预处理器定义中加入_CRT_SECURE_NO_WARNINGS
 
-    ![./media/image-20231226181034221png](./media/image-20231226181034221png)
+    ![./media/image-20231226181034221png](./media/image-20231226181034221.png)
 
 + 读取OBJ文件因为是相对路径，如果发现模型导入失败，可以检查文件路径是否正确
 
