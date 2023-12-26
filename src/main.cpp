@@ -108,7 +108,7 @@ void DrawScene()
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	glScalef(0.50f, 0.50f, 0.50f);
 	glColor3f(0.0f, 0.0f, 1.0f);
-	//head.DrawMouse(HEAD);
+	head.DrawMouse(HEAD);
 	glColor3f(0.0f, 1.0f, 1.0f);
 	base.DrawMouse(BASE);
 	glPopMatrix();

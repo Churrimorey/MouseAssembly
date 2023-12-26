@@ -3,7 +3,23 @@ CG project imitating mouse assembly workshop.
 
 参考[ABB机器人IRB 120鼠标装配工作站-ABB13316608765_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1W64y1u7LL/?spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=354c3e5aed42e0fa3fff228c9fee5f31)
 
-## 文件结构说明
+## 说明！！！
+
++ 在OBJ导入部分用了一个线程不安全的函数，需要在预编译器重新设置流程如下：
+
+  + 右击项目名称选择属性![image-20231226180910901](C:\Users\lee\AppData\Roaming\Typora\typora-user-images\image-20231226180910901.png)
+
+  + 找C/C++下的预编译器选项![image-20231226180947629](C:\Users\lee\AppData\Roaming\Typora\typora-user-images\image-20231226180947629.png)
+
+  + 在预处理器定义中加入_CRT_SECURE_NO_WARNINGS
+
+    ![image-20231226181034221](C:\Users\lee\AppData\Roaming\Typora\typora-user-images\image-20231226181034221.png)
+
++ 读取OBJ文件因为是相对路径，如果发现模型导入失败，可以检查文件路径是否正确
+
+
+
+##文件结构说明
 
 ├─build
 

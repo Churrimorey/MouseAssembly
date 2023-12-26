@@ -5,16 +5,16 @@
 Mouse::Mouse(const Vec3& position, Type type) : position_(position), type_(type) {
 	printf("OPEN\n");
 	if (type == HEAD) {
-		char filename[] = "D:/course/CG/final/MouseAssembly/src/tip.obj";
+		char filename[] = "./tip.obj";
 		head.open_obj(filename);
 	}
 	else if (type == BASE) {
-		char filename[] = "D:/course/CG/final/MouseAssembly/src/base.obj";
+		char filename[] = "./base.obj";
 		base.open_obj(filename);
 	}
 	else {
-		head.open_obj("D:/course/CG/final/MouseAssembly/src/tip.obj");
-		base.open_obj("D:/course/CG/final/MouseAssembly/src/base.obj");
+		head.open_obj("./tip.obj");
+		base.open_obj("./base.obj");
 	}
 }
 
