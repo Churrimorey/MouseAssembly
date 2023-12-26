@@ -83,10 +83,8 @@ CG project imitating mouse assembly workshop.
 
 最新效果：
 
-鼠标外壳
+鼠标外壳![mouseInLight](./media/OBJ_mouse_tip.png)
 
-![mouseInLight](.\media\OBJ_mouse_tip.png)
+鼠标底座![mouseInLight](./media/OBJ_mouse_base.png)
 
-鼠标底座![mouseInLight](.\media\OBJ_mouse_base.png)
-
-鼠标拼装效果![mouseInLight](.\media\OBJ_mouse_whole.png)
+鼠标拼装效果![mouseInLight](./media/OBJ_mouse_whole.png)
