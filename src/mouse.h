@@ -4,23 +4,22 @@
 #include <gl/glut.h>
 #include <vector>
 #include "Vec3.h"
+#include "objloader.h"
+enum  Type { HEAD = 1, BASE, WHOLE};
 
 class Mouse {
 public:
-	enum class Type { HEAD = 1, BASE };
-
 	Mouse() = default;
 
-	Mouse(const Vec3 & position, Type type) : position_(position), type_(type) {}
+	Mouse(const Vec3& position, Type type);
 
 	void Draw() const;
 
 	const Vec3& GetPosition() const { return position_; }
-
-	static void DrawMouse(int num);
-
+	void DrawMouse(Type type)const;
 private:
-	static short face_indicies[][3];
+	ObjLoader base;
+	ObjLoader head;
 	Vec3 position_;
 	Type type_;
 };
@@ -29,18 +28,18 @@ class MousePlate {
 public:
 	static void DrawPlates(std::vector<MousePlate> &plates);
 
-	MousePlate(const Vec3 &position) : position_(position) {}
+	MousePlate(const Vec3& position) : position_(position) {};
 
 	void DrawMousePlates() const;
 
-	std::vector<Mouse>& GetMouses() { return mouse_;  }
+	std::vector<class Mouse>& GetMouses() { return mouse_;  }
 
 	void DrawMouseHeads();
 
 	void DrawMouseBases();
 
 private:
-	std::vector<Mouse> mouse_;
+	std::vector<class Mouse> mouse_;
 	Vec3 position_;
 };
 

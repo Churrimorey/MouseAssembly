@@ -31,12 +31,15 @@ std::vector<Battery> battries;
 Clock myclock{ true };
 Menu menu(1);
 
+Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
+Mouse base = Mouse(Vec3(0, 0, 0), BASE);
+
 void init()
 {
-	GLint buf[1], sbuf[1];
-	glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
-	glGetIntegerv(GL_SAMPLES_ARB, sbuf);
-	glEnable(GL_MULTISAMPLE_ARB);
+	//GLint buf[1], sbuf[1];
+	//glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
+	//glGetIntegerv(GL_SAMPLES_ARB, sbuf);
+	//glEnable(GL_MULTISAMPLE_ARB);
 
 	glGenTextures(2, texture);
 	texload(0, (char*)"table.bmp");
@@ -46,6 +49,20 @@ void init()
 
 	Light::InitLight(menu);
 	Material::InitMaterial();
+	
+	
+
+}
+
+// 获取并打印模型视图矩阵
+void printModelViewMatrix() {
+	GLfloat modelViewMatrix[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelViewMatrix);
+	std::cout << "Model View Matrix:" << std::endl;
+	for (int i = 0; i < 16; i++) {
+		std::cout << modelViewMatrix[i] << " ";
+		if ((i + 1) % 4 == 0) std::cout << std::endl;
+	}
 }
 
 void DrawScene()
@@ -85,32 +102,37 @@ void DrawScene()
 	}
 
 	glPushMatrix();
-	glTranslatef(3.0f, -2.5f, 4.0f);
+	printModelViewMatrix();
+	//glLoadIdentity();
+	glTranslatef(2.5f, -2.5f, 5.0f);
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
-	Mouse::DrawMouse(0);
+	glScalef(0.50f, 0.50f, 0.50f);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	//head.DrawMouse(HEAD);
+	glColor3f(0.0f, 1.0f, 1.0f);
+	base.DrawMouse(BASE);
 	glPopMatrix();
 }
 
 void DrawEditBar()
 {
-	glPushMatrix();
-	glTranslatef(-3.6f, 2.5f, 0.0f);
-	glScalef(0.08f, 0.08f, 0.08f);
-	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	Mouse::DrawMouse(1);
-	glPopMatrix();
+		glPushMatrix();
+		glTranslatef(-3.6f, 2.5f, 0.0f);
+		glScalef(0.8f, 0.8f, 0.8f);
+		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		head.DrawMouse(HEAD);
+		glPopMatrix();
 
-	glPushMatrix();
-	glTranslatef(-3.6f, 1.3f, 0.0f);
-	glScalef(0.08f, 0.08f, 0.08f);
-	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	Mouse::DrawMouse(2);
-	glPopMatrix();
+		glPushMatrix();
+		glTranslatef(-3.6f, 1.3f, 0.0f);
+		glScalef(0.8f, 0.8f, 0.8f);
+		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		base.DrawMouse(BASE);
+		glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(-3.6f, -0.05f, 0.0f);
@@ -178,7 +200,7 @@ void key(unsigned char k, int x, int y)
 	}
 }
 
-void Mouse(int button, int state, int x, int y)
+void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
@@ -290,7 +312,7 @@ int main(int argc, char* argv[])
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
 	glutIdleFunc(idle);
-	glutMouseFunc(Mouse);
+	glutMouseFunc(mouse);
 
 	glutMainLoop();
 	return 0;
