@@ -78,3 +78,15 @@ CG project imitating mouse assembly workshop.
 新加入了ObjLoader类，如果需要导入鼠标意外的OBJ模型可调用这个类，提供了导入OBJ和绘制该OBJ模型的方法
 
 目前绘制鼠标需要调用类Mouse的成员函数，改变了以前直接调用静态函数的方式
+
+
+
+最新效果：
+
+鼠标外壳
+
+![mouseInLight](.\media\OBJ_mouse_tip.png)
+
+鼠标底座![mouseInLight](.\media\OBJ_mouse_base.png)
+
+鼠标拼装效果![mouseInLight](.\media\OBJ_mouse_whole.png)
