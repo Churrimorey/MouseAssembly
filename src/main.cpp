@@ -36,10 +36,12 @@ Mouse base = Mouse(Vec3(0, 0, 0), BASE);
 
 void init()
 {
-	//GLint buf[1], sbuf[1];
-	//glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
-	//glGetIntegerv(GL_SAMPLES_ARB, sbuf);
-	//glEnable(GL_MULTISAMPLE_ARB);
+	#ifdef MACOS
+	GLint buf[1], sbuf[1];
+	glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
+	glGetIntegerv(GL_SAMPLES_ARB, sbuf);
+	glEnable(GL_MULTISAMPLE_ARB);
+	#endif
 
 	glGenTextures(2, texture);
 	texload(0, (char*)"table.bmp");
@@ -49,9 +51,6 @@ void init()
 
 	Light::InitLight(menu);
 	Material::InitMaterial();
-	
-	
-
 }
 
 // 获取并打印模型视图矩阵
@@ -67,7 +66,6 @@ void printModelViewMatrix() {
 
 void DrawScene()
 {
-	Material::SetMaterial(Material::Unknown);
 	Light::FlushLight();
 
 	DrawTable();
@@ -88,16 +86,16 @@ void DrawScene()
 	}
 	Material::SetMaterial(Material::Plate);
 	MousePlate::DrawPlates(plates);
-	Material::SetMaterial(Material::Mouse);
+
 	if (bMouseHead)
 	{
-		glColor3f(1.0 * 79 / 255, 1.0 * 79 / 255, 1.0 * 79 / 255);
+		Material::SetMaterial(Material::MouseHead);
 		plates[0].DrawMouseHeads();
 	}
 
 	if (bMouseBase)
 	{
-		glColor3f(1.0 * 79 / 255, 1.0 * 79 / 255, 1.0 * 79 / 255);
+		Material::SetMaterial(Material::MouseBase);
 		plates[2].DrawMouseBases();
 	}
 
@@ -107,9 +105,9 @@ void DrawScene()
 	glTranslatef(2.5f, -2.5f, 5.0f);
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	glScalef(0.50f, 0.50f, 0.50f);
-	glColor3f(0.0f, 0.0f, 1.0f);
+	Material::SetMaterial(Material::MouseHead);
 	head.DrawMouse(HEAD);
-	glColor3f(0.0f, 1.0f, 1.0f);
+	Material::SetMaterial(Material::MouseBase);
 	base.DrawMouse(BASE);
 	glPopMatrix();
 }

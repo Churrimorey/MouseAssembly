@@ -47,11 +47,17 @@ void Material::InitMaterial() {
     set_4fv(material_specular_[Desk], 0x737373U);
     material_shininess_[Desk] = 1.0f;
 
-    // Mouse
-    set_4fv(material_ambient_[Mouse], 0x101010U);
-    set_4fv(material_diffuse_[Mouse], 0x505050U);
-    set_4fv(material_specular_[Mouse], 0xa0a0a0U);
-    material_shininess_[Mouse] = 0.8f;
+    // MouseBase
+    set_4fv(material_ambient_[MouseBase], 0x50d050U);
+    set_4fv(material_diffuse_[MouseBase], 0x503050U);
+    set_4fv(material_specular_[MouseBase], 0x002000U);
+    material_shininess_[MouseBase] = 1.0f;
+
+    // MouseTip
+    set_4fv(material_ambient_[MouseHead], 0x101010U);
+    set_4fv(material_diffuse_[MouseHead], 0x505050U);
+    set_4fv(material_specular_[MouseHead], 0xa0a0a0U);
+    material_shininess_[MouseHead] = 0.8f;
 
     // Unknown
     set_4fv(material_ambient_[Unknown], 1.0f, 0.0f, 0.0f, 1.0f);
