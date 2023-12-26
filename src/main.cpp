@@ -114,23 +114,23 @@ void DrawScene()
 
 void DrawEditBar()
 {
-		//glPushMatrix();
-		//glTranslatef(-3.6f, 2.5f, 0.0f);
-		//glScalef(2.0f, 2.0f, 2.0f);
-		//glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-		//glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-		//glColor3f(1.0f, 1.0f, 1.0f);
-		//head.DrawMouse(HEAD);
-		//glPopMatrix();
+		glPushMatrix();
+		glTranslatef(-3.3f, 2.9f, 0.0f);
+		glScalef(0.2f, 0.2f, 0.2f);
+		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+		Material::SetMaterial(Material::MouseHead);	
+		head.DrawMouse(HEAD);
+		glPopMatrix();
 
-		//glPushMatrix();
-		//glTranslatef(-3.6f, 1.3f, 0.0f);
-		//glScalef(20.0f, 20.f, 20.0f);
-		//glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-		//glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-		//glColor3f(1.0f, 1.0f, 1.0f);
-		//base.DrawMouse(BASE);
-		//glPopMatrix();
+		glPushMatrix();
+		glTranslatef(-3.3f, 1.7f, 0.0f);
+		glScalef(0.2f, 0.2f, 0.2f);
+		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+		Material::SetMaterial(Material::MouseBase);
+		base.DrawMouse(BASE);
+		glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(-3.6f, -0.05f, 0.0f);
