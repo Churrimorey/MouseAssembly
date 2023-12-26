@@ -47,35 +47,35 @@ void Light::InitLight(Menu& menu) {
     SubMenu* light_menu = new SubMenu("Light");
     menu.AddRootItem(light_menu);
 	CommandMenuItem* light_on = new CommandMenuItem("Light On", [](std::vector<int>& menu_id) {
-		Light::TurnOnLight(menu_id[1]-9);
+		Light::TurnOnLight(menu_id[1]-10);
 	});
 	int i_light_on=menu.AddItem(light_on);
 	CommandMenuItem* light_off = new CommandMenuItem("Light Off", [](std::vector<int>& menu_id) {
-		Light::TurnOffLight(menu_id[1]-9);
+		Light::TurnOffLight(menu_id[1]-10);
 	});
 	int i_light_off=menu.AddItem(light_off);
 	CommandMenuItem* light_bri_up = new CommandMenuItem("Brightness Up", [](std::vector<int>& menu_id) {
-		Light::AdjLightBrightness(menu_id[1]-9, 0.1f);
+		Light::AdjLightBrightness(menu_id[1]-10, 0.1f);
 	});
 	int i_light_bri_up=menu.AddItem(light_bri_up);
 	CommandMenuItem* light_bri_down = new CommandMenuItem("Brightness Down", [](std::vector<int>& menu_id) {
-		Light::AdjLightBrightness(menu_id[1]-9, -0.1f);
+		Light::AdjLightBrightness(menu_id[1]-10, -0.1f);
 	});
 	int i_light_bri_down=menu.AddItem(light_bri_down);
     CommandMenuItem* light_forwrrd = new CommandMenuItem("Move Forward", [](std::vector<int>& menu_id) {
-        Light::MoveLightPosition(menu_id[1]-9, 0.0f, 0.0f, -1.0f, 0.0f);
+        Light::MoveLightPosition(menu_id[1]-10, 0.0f, 0.0f, -1.0f, 0.0f);
     });
     int i_light_forward=menu.AddItem(light_forwrrd);
     CommandMenuItem* light_backward = new CommandMenuItem("Move Backward", [](std::vector<int>& menu_id) {
-        Light::MoveLightPosition(menu_id[1]-9, 0.0f, 0.0f, 1.0f, 0.0f);
+        Light::MoveLightPosition(menu_id[1]-10, 0.0f, 0.0f, 1.0f, 0.0f);
     });
     int i_light_backward=menu.AddItem(light_backward);
     CommandMenuItem* light_left = new CommandMenuItem("Move Left", [](std::vector<int>& menu_id) {
-        Light::MoveLightPosition(menu_id[1]-9, -1.0f, 0.0f, 0.0f, 0.0f);
+        Light::MoveLightPosition(menu_id[1]-10, -1.0f, 0.0f, 0.0f, 0.0f);
     });
     int i_light_left=menu.AddItem(light_left);
     CommandMenuItem* light_right = new CommandMenuItem("Move Right", [](std::vector<int>& menu_id) {
-        Light::MoveLightPosition(menu_id[1]-9, 1.0f, 0.0f, 0.0f, 0.0f);
+        Light::MoveLightPosition(menu_id[1]-10, 1.0f, 0.0f, 0.0f, 0.0f);
     });
     int i_light_right=menu.AddItem(light_right);
 

@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+extern unsigned int texture[3];
+
 class MenuItem {
     std::string name;
 public:
@@ -46,4 +48,13 @@ public:
     void Draw(GLint x, GLint y);
     bool Hit(GLint x, GLint y);
     ~Menu();
+};
+
+class ARabout {
+    static bool DrawAbout;
+public:
+    static void InitAR(Menu& menu);
+    static void Draw();
+    static void Hit(GLint x, GLint y);
+    static void Enable(std::vector<int>& menu_id);
 };

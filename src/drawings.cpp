@@ -4,7 +4,6 @@
 void Texture_desk()
 {	
 	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
 	glPushMatrix();

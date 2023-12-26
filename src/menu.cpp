@@ -1,6 +1,9 @@
 #include "menu.h"
+#include "util.h"
 
 using namespace std;
+
+bool ARabout::DrawAbout = false;
 
 void MenuItem::Draw(GLint x, GLint y, GLint menu_item_width, GLint menu_item_height) {
     glPushMatrix();
@@ -133,4 +136,35 @@ Menu::~Menu() {
             delete (CommandMenuItem *)menu_items_[i];
         }
     }
+}
+
+void ARabout::InitAR(Menu& menu) {
+    CommandMenuItem* about_menu = new CommandMenuItem("About", ARabout::Enable);
+    menu.AddRootItem(about_menu);
+}
+
+void ARabout::Draw() {
+    if (DrawAbout) {
+        glEnable(GL_TEXTURE_2D);
+	    glBindTexture(GL_TEXTURE_2D, texture[2]);
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, 0);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(180, 0);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(180, 240);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 240);
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+    }
+}
+
+void ARabout::Hit(GLint x, GLint y) {
+    if (x >= 0 && x <= 180 && y >= 240 && y <= 480) {
+        DrawAbout = false;
+    }
+}
+
+void ARabout::Enable(vector<int>& menu_id) {
+    DrawAbout = true;
 }

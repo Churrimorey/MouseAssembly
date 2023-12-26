@@ -18,7 +18,7 @@ int gHeight;
 int gWidth;
 float eye[] = { 0, 4, 8 };
 float center[] = { 0, 0, 0 };
-unsigned int texture[2];
+unsigned int texture[3];
 bool bMouseBase = false;
 bool bMouseHead = false;
 bool bBattery = false;
@@ -29,7 +29,7 @@ std::unique_ptr<Robot> right_robot;   // �һ�е��
 std::vector<MousePlate> plates;
 std::vector<Battery> battries;
 Clock myclock{ true };
-Menu menu(1);
+Menu menu(2);
 
 Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
 Mouse base = Mouse(Vec3(0, 0, 0), BASE);
@@ -43,14 +43,16 @@ void init()
 	glEnable(GL_MULTISAMPLE_ARB);
 	#endif
 
-	glGenTextures(2, texture);
+	glGenTextures(3, texture);
 	texload(0, (char*)"table.bmp");
 	texload(1, (char*)"battery.bmp");
+	texload(2, (char*)"ar.bmp");
 	left_robot.reset(Robot::CreateLeftRobot());
 	right_robot.reset(Robot::CreateRightRobot());
 
 	Light::InitLight(menu);
 	Material::InitMaterial();
+	ARabout::InitAR(menu);
 }
 
 // 获取并打印模型视图矩阵
@@ -202,6 +204,7 @@ void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
+		ARabout::Hit(x, y);
 		if (menu.Hit(x, gHeight - y))
 			return;
 		printf("%d %d\n", x, y);
@@ -291,6 +294,7 @@ void redraw()
 	glLoadIdentity();
 	gluOrtho2D(0, gWidth, 0, gHeight);
 	glMatrixMode(GL_MODELVIEW);
+	ARabout::Draw();
 	menu.Draw(0, 0);
 	glPopMatrix();
 
