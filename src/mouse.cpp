@@ -3,7 +3,6 @@
 //const float g_lightPos[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 
 Mouse::Mouse(const Vec3& position, Type type) : position_(position), type_(type) {
-	printf("OPEN\n");
 	if (type == HEAD) {
 		char filename[] = "./tip.obj";
 		head.open_obj(filename);
@@ -40,9 +39,9 @@ void MousePlate::DrawMousePlates() const {
 
 void Mouse::Draw() const {
 	glPushMatrix();
-	glTranslatef(position_.GetX(), position_.GetY(), position_.GetZ());
+	glTranslatef(position_.GetX()-0.3, position_.GetY(), position_.GetZ()+1.5);
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.2f, 0.2f, 0.2f);
+	glScalef(0.6f, 0.6f, 0.6f);
 	DrawMouse(type_);
 	glPopMatrix();
 }
