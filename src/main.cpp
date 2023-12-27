@@ -13,11 +13,26 @@
 #include "material.h"
 #include "clock.h"
 #include "menu.h"
-
+#include "getFPS.h"
+#include <math.h>
+#define PI 3.1415926535
+#define STEP 1 // 视角平移的系数
+#define GLUT_KEY_SHIFT_L 97
+#define GLUT_KEY_SHIFT_R 98
 int gHeight;
 int gWidth;
-float eye[] = { 0, 4, 8 };
-float center[] = { 0, 0, 0 };
+
+float eye[] = { 0, 4, 8 }; // camera coordinates
+float center[] = { 0, 0, 0 }; //center coordinates
+static int du = 90; //du是视点和x轴的夹角
+static int dv = 0;
+static int OriX = -1, OriY = -1;  
+
+static float r = 10, h = 0.0;   //r是视点绕y轴的半径，h是视点高度即在y轴上的坐标
+static float c = PI / 180.0;    //弧度和角度转换参数
+double step = 0;
+double height = 0;
+
 unsigned int texture[3];
 bool bMouseBase = false;
 bool bMouseHead = false;
@@ -178,7 +193,22 @@ void idle()
 {
 	glutPostRedisplay();
 }
-
+void specialKeys(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_UP:
+	{
+		height += STEP;
+		break;
+	}	
+	case GLUT_KEY_DOWN:
+	{
+		height -= STEP;
+		break;
+	}
+	default:
+		break;
+	}
+}
 void key(unsigned char k, int x, int y)
 {
 	switch (k)
@@ -196,10 +226,27 @@ void key(unsigned char k, int x, int y)
 
 		break;
 	}
+	// change perspective
+	case 'w': {
+		r -= STEP;
+		break;
+	}
+	case 's': {
+		r += STEP;
+		break;
+	}
+	case 'd': {
+		step += STEP;
+		break;
+	}
+	case 'a': {
+		step -= STEP;
+		break;
+	}
 	default: break;
 	}
 }
-
+bool NoWalkTh = 0; // when the left button is not in down state, not walkthrough
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
@@ -224,8 +271,26 @@ void mouse(int button, int state, int x, int y)
 			}
 		}
 	}
+	else {
+		NoWalkTh = 0;
+	}
 }
 
+void onMouseMove(int x, int y)   //处理鼠标拖动
+{
+	if (NoWalkTh == 0) { // if not walkthrough, just save the point
+		NoWalkTh = 1;
+		OriX = x;
+		OriY = y;
+	}
+	du += x - OriX; //鼠标在窗口x轴方向上的增量加到视点与x轴的夹角上，就可以左右转
+	dv += y - OriY;  //鼠标在窗口y轴方向上的改变加到视点y的坐标上，就可以上下转
+	h += 0.03 * (y - OriY);  //鼠标在窗口y轴方向上的改变加到视点y的坐标上，就可以上下转
+	if (h > 1.0)   h = 1.0;  //对视点y坐标作一些限制，不会使视点太奇怪
+	else if (h < -1.0) h = -1.0;
+	OriX = x, OriY = y;  //将此时的坐标作为旧值，为下一次计算增量做准备
+
+}
 void redraw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -239,12 +304,18 @@ void redraw()
 	glLoadIdentity();
 	float whRatio = (GLfloat)(gWidth - 80) / (GLfloat)gHeight;
 	gluPerspective(45, whRatio, 1, 1000);
+	if (du > 360) du -= 360;
+	if (du < -360) du += 360;
+	if (dv > 360) dv -= 360;
+	if (dv < -360) dv += 360;
+	//eye[0] = r * cos(c * du) * cos(c * dv);
+	//eye[1] = r * sin(c * dv);
+	//eye[2] = r * cos(c * dv) * sin(c * du);
+	//printf_s("eye = %f,%f,%f\n", eye[0], eye[1], eye[2]);
+	gluLookAt(r * cos(c * du) + step * sin(c * du), h + height, r * sin(c * du) - step * cos(c * du), step * sin(c * du), height, -step * cos(c * du), 0.0, 1.0, 0.0);   //从视点看远点
+	//gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0.0, 1.0, 0.0);
+
 	glMatrixMode(GL_MODELVIEW);
-
-	gluLookAt(eye[0], eye[1], eye[2],
-		center[0], center[1], center[2],
-		0, 1, 0);
-
 	glTranslatef(0.8f, 0.0f, 0.0f);
 	glScalef(0.4, 0.4, 0.4);
 	DrawScene();
@@ -296,6 +367,21 @@ void redraw()
 	glMatrixMode(GL_MODELVIEW);
 	ARabout::Draw();
 	menu.Draw(0, 0);
+	getFPS();
+	glPopMatrix();
+
+	 //draw view center point
+	glPushMatrix();
+	glViewport(0, 0, gWidth, gHeight);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, gWidth, 0, gHeight);
+	glMatrixMode(GL_MODELVIEW);
+	glColor3f(1.0f,0.0f,0.0f);
+	glPointSize(10.0f);
+	glBegin(GL_POINTS);
+	glVertex3f(gWidth / 2, gHeight / 2, 0.0f);
+	glEnd();
 	glPopMatrix();
 
 	glutSwapBuffers();
@@ -313,8 +399,10 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
+	glutSpecialFunc(specialKeys);
 	glutIdleFunc(idle);
 	glutMouseFunc(mouse);
+	glutMotionFunc(onMouseMove);
 
 	glutMainLoop();
 	return 0;
