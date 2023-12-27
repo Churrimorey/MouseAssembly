@@ -1,6 +1,4 @@
 #include "menu.h"
-#include "util.h"
-
 using namespace std;
 
 bool ARabout::DrawAbout = false;
