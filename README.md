@@ -112,4 +112,4 @@ CG project imitating mouse assembly workshop.
 
 下图是完成效果：
 
-![image-20231227144345583](image-20231227144345583.png)
+![image-20231227144345583](./image-20231227144345583-1703659673859-1.png)
