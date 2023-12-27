@@ -108,6 +108,15 @@ static void Transpose(GLfloat* matrix) {
 	}
 }
 
+/**
+ * @brief update the left robot arm's position, move to the detination
+ * 
+ * @param robot - the left robot
+ * @param destination - the Mouse we want to catch (chosen in the redraw(main.cpp))
+ * @param elapsed_time - the elapsed time (using the clock)
+ * @return true - We arrive at the destination
+ * @return false - We havn't arrived at the destination
+ */
 bool Robot::UpdateLeftPositionToMouse(Robot &robot, const Mouse& destination, double elapsed_time) {
 	Vec3 diff = destination.GetPosition() - robot.GetPosition();
 	
@@ -128,6 +137,15 @@ bool Robot::UpdateLeftPositionToMouse(Robot &robot, const Mouse& destination, do
 	return false;
 }
 
+/**
+ * @brief update the left robot arm's position, move to the detination
+ * 
+ * @param robot - the left robot
+ * @param destination - the Battery we want to catch (chosen in the redraw(main.cpp))
+ * @param elapsed_time - the elapsed time (using the clock)
+ * @return true - We arrive at the destination
+ * @return false - We havn't arrived at the destination
+ */
 bool Robot::UpdateLeftPositionToBattery(Robot& robot, const Battery& destination, double elapsed_time) {
 	Vec3 diff = destination.GetPosition() + Vec3{ 0.0f, -3.0f, 0.0f } - robot.GetPosition();
 
@@ -149,6 +167,15 @@ bool Robot::UpdateLeftPositionToBattery(Robot& robot, const Battery& destination
 	return false;
 }
 
+/**
+ * @brief update the right robot arm's position, move to the detination
+ * 
+ * @param robot - the right robot
+ * @param destination - the Mouse we want to catch (chosen in the redraw(main.cpp))
+ * @param elapsed_time - the elapsed time (using the clock)
+ * @return true - We arrive at the destination
+ * @return false - We havn't arrived at the destination
+ */
 bool Robot::UpdateRightPositionToMouse(Robot& robot, const Mouse& destination, double elapsed_time) {
 	Vec3 diff = destination.GetPosition() - robot.GetPosition();
 
@@ -169,6 +196,15 @@ bool Robot::UpdateRightPositionToMouse(Robot& robot, const Mouse& destination, d
 	return false;
 }
 
+/**
+ * @brief update the right robot arm's position, move to the detination
+ * 
+ * @param robot - the right robot
+ * @param destination - the Battery we want to catch (chosen in the redraw(main.cpp))
+ * @param elapsed_time - the elapsed time (using the clock)
+ * @return true - We arrive at the destination
+ * @return false - We havn't arrived at the destination
+ */
 bool Robot::UpdateRightPositionToBattery(Robot& robot, const Battery& destination, double elapsed_time) {
 	Vec3 diff = destination.GetPosition() + Vec3{ 0.0f, -3.0f, 0.0f } - robot.GetPosition();
 
@@ -191,8 +227,8 @@ bool Robot::UpdateRightPositionToBattery(Robot& robot, const Battery& destinatio
 }
 
 /** 
-* UpdatePosition - 更新机械臂位置
-* 
+ * UpdatePosition - 更新机械臂位置
+ * 
  */
 void Robot::UpdateLeftPositionToMouse(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position) {
 	auto len = position.Length();
