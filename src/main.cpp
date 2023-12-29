@@ -49,6 +49,8 @@ Menu menu(2);
 Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
 Mouse base = Mouse(Vec3(0, 0, 0), BASE);
 
+GLUnurbsObj *theNurb;
+
 void init()
 {
 	#ifdef MACOS
@@ -68,6 +70,10 @@ void init()
 	Light::InitLight(menu);
 	Material::InitMaterial();
 	ARabout::InitAR(menu);
+
+	theNurb = gluNewNurbsRenderer();
+	gluNurbsProperty(theNurb, GLU_SAMPLING_TOLERANCE, 10.0);
+	gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
 }
 
 // 获取并打印模型视图矩阵
@@ -295,10 +301,21 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 void redraw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LEQUAL);
+	glEnable(GL_AUTO_NORMAL);
+	glEnable(GL_NORMALIZE);
 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+	glEnable(GL_BLEND);
+
+	glFrontFace(GL_CW);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
+
+	glLoadIdentity();
 	glPushMatrix();
 	glViewport(80, 0, gWidth - 80, gHeight);
 	glMatrixMode(GL_PROJECTION);

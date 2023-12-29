@@ -88,7 +88,7 @@ public:
 
     explicit RobotArm(const Vec3& position, float rotate, Robot* next = nullptr) : Robot(position, next), prev_(nullptr), rotate_(rotate) {}
 
-    void Draw() const override;
+    virtual void Draw() const = 0;
 
     void SetRotate(float rotate) { rotate_ = rotate; }
 
@@ -98,9 +98,21 @@ public:
 
     Vec3 GetLocalPosition() const;
 
-private:
+protected:
     Robot* prev_;
     float rotate_;
+};
+
+class RobotRightArm : public RobotArm {
+public:
+	explicit RobotRightArm(const Vec3& position, float rotate, Robot* next = nullptr) : RobotArm(position,rotate,next){}
+	void Draw() const override;
+};
+
+class RobotLeftArm : public RobotArm {
+public:
+	explicit RobotLeftArm(const Vec3& position, float rotate, Robot* next = nullptr) : RobotArm(position, rotate, next) {}
+	void Draw() const override;
 };
 
 class RobotFinger : public Robot {
