@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #if defined(__APPLE__) && defined(__MACH__)
 
 #  include <GLUT/glut.h>
@@ -14,7 +16,6 @@
 #include <fstream>
 #include <regex>
 #include "objloader.h"
-
 
 ObjLoader::ObjLoader():vertices(), faces_quads(), faces_triangles(),is_quad(),render_mode(true){
 }

@@ -1,7 +1,10 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <string.h>
 #include <stdio.h>
 #include <gl/glut.h>
 #include "getFPS.h"
+
 void renderBitmapString(float x, float y, void* font, char* string) {
     char* c;
     glRasterPos2f(x, y);

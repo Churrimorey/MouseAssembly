@@ -1,8 +1,21 @@
 #include "menu.h"
+#include <iostream>
+#ifndef MACOS
+#include <thread>
+#include <winsock.h>
+#pragma comment (lib,"ws2_32.lib")
+#define PORT 5240
+#endif
 
 using namespace std;
 
 bool ARabout::DrawAbout = false;
+bool ARabout::large_target = false;
+#ifndef MACOS
+SOCKET ARabout::server;
+SOCKET ARabout::client;
+Menu ARabout::submenu(3);
+#endif
 
 void MenuItem::Draw(GLint x, GLint y, GLint menu_item_width, GLint menu_item_height) {
     glPushMatrix();
@@ -45,6 +58,8 @@ Menu::Menu(int n_root_nemu_item) : n_root_nemu_item(n_root_nemu_item) {
         menu_items_.push_back(item);
         menu_show_[0][i] = i;
     }
+
+    i_root_nemu_item = 0;
 }
 
 int Menu::AddItem(MenuItem* item) {
@@ -53,14 +68,13 @@ int Menu::AddItem(MenuItem* item) {
 }
 
 void Menu::AddRootItem(MenuItem* item) {
-    static int i = 0;
-    if (menu_items_[i]->Type == MenuItem::MenuItemType::SubMenu) {
-        delete (SubMenu *)menu_items_[i];
+    if (menu_items_[i_root_nemu_item]->Type == MenuItem::MenuItemType::SubMenu) {
+        delete (SubMenu *)menu_items_[i_root_nemu_item];
     }
-    else if (menu_items_[i]->Type == MenuItem::MenuItemType::Command) {
-        delete (CommandMenuItem *)menu_items_[i];
+    else if (menu_items_[i_root_nemu_item]->Type == MenuItem::MenuItemType::Command) {
+        delete (CommandMenuItem *)menu_items_[i_root_nemu_item];
     }
-    menu_items_[i++] = item;
+    menu_items_[i_root_nemu_item++] = item;
 }
 
 void Menu::Draw(GLint x, GLint y) {
@@ -140,7 +154,65 @@ Menu::~Menu() {
 void ARabout::InitAR(Menu& menu) {
     CommandMenuItem* about_menu = new CommandMenuItem("About", ARabout::Enable);
     menu.AddRootItem(about_menu);
+    #ifndef MACOS
+    thread listen_thread;
+    listen_thread = thread(server_listen);
+    listen_thread.detach();
+
+    CommandMenuItem* show_base = new CommandMenuItem("Show Base", [](vector<int>& menu_id) {
+		send_message(client, "Show Base");
+	});
+
+    CommandMenuItem* show_tip = new CommandMenuItem("Show Tip", [](vector<int>& menu_id) {
+        send_message(client, "Show Tip");
+    });
+
+    CommandMenuItem* show_battery = new CommandMenuItem("Show Battery", [](vector<int>& menu_id) {
+        send_message(client, "Show Battery");
+    });
+
+    submenu.AddRootItem(show_base);
+    submenu.AddRootItem(show_battery);
+    submenu.AddRootItem(show_tip);
+    #endif
 }
+
+
+#ifndef MACOS
+void ARabout::server_listen() {
+    int len;
+
+    thread thread_recv;
+
+    SOCKADDR_IN server_addr;
+    SOCKADDR_IN client_addr;
+
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+    server = socket(AF_INET, SOCK_STREAM, 0);
+
+    memset(&server_addr, 0, sizeof(server_addr)); 
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = inet_addr("0.0.0.0"); 
+    server_addr.sin_port = htons(PORT); 
+    if (bind(server, (SOCKADDR*)&server_addr, sizeof(SOCKADDR)) == -1) {
+		closesocket(server);
+		WSACleanup();
+		return;
+	}
+
+    listen(server, 10);
+
+    while (true) {
+        len = sizeof(SOCKADDR);
+        client = accept(server, (SOCKADDR*)&client_addr, &len);
+
+        thread_recv = thread(receive_message, client);
+        thread_recv.join();
+    }
+}
+#endif
 
 void ARabout::Draw() {
     if (DrawAbout) {
@@ -148,22 +220,60 @@ void ARabout::Draw() {
 	    glBindTexture(GL_TEXTURE_2D, texture[2]);
 
         glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, 0);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(180, 0);
-        glTexCoord2f(1.0f, 1.0f); glVertex2i(180, 240);
-        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 240);
+        int height = large_target ? 360 : 240;
+        int width = large_target ? 270 : 180;
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(100, 0);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(width+100, 0);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(width+100, height);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(100, height);
         glEnd();
 
         glDisable(GL_TEXTURE_2D);
+
+        #ifndef MACOS
+        submenu.Draw(0, 0);
+        #endif
     }
 }
 
-void ARabout::Hit(GLint x, GLint y) {
-    if (x >= 0 && x <= 180 && y >= 240 && y <= 480) {
+bool ARabout::Hit(GLint x, GLint y) {
+    if (DrawAbout) {
+        #ifndef MACOS
+        if (!submenu.Hit(x, y)) {
+            DrawAbout = false;
+        }
+        #else
         DrawAbout = false;
+        #endif
+        return true;
+    }
+    else {
+        return false;
     }
 }
 
 void ARabout::Enable(vector<int>& menu_id) {
     DrawAbout = true;
 }
+
+#ifndef MACOS
+void ARabout::send_message(SOCKET client, const char* msg) {
+    cout << msg << endl;
+    send(client, msg, strlen(msg), 0);
+}
+
+void ARabout::receive_message(SOCKET client) {
+    char recv_buf[1460];//���ջ�����
+
+    while (true) {
+        // Receive message from the server
+        recv_buf[recv(client, recv_buf, 1459, 0)] = '\0';
+        if (recv_buf[0] == '\0')
+            break;
+        cout << recv_buf << endl;
+        if (strcmp(recv_buf, "target") == 0) {
+            large_target = !large_target;
+        }
+    }
+}
+#endif

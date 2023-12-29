@@ -2,6 +2,9 @@
 #include <gl/glut.h>
 #include <vector>
 #include <string>
+#ifndef MACOS
+#include <winsock.h>
+#endif
 
 extern unsigned int texture[3];
 
@@ -37,6 +40,7 @@ class Menu {
     const int menu_item_height = 20;
     const int menu_item_width = 100;
     int n_root_nemu_item;
+    int i_root_nemu_item;
     std::vector<MenuItem*> menu_items_;
     std::vector<std::vector<int>> menu_show_;
     std::vector<int> menu_have_hit;
@@ -52,9 +56,19 @@ public:
 
 class ARabout {
     static bool DrawAbout;
+    static bool large_target;
+    #ifndef MACOS
+    static SOCKET server;
+    static SOCKET client;
+    static Menu submenu;
+
+    static void server_listen();
+    static void send_message(SOCKET client, const char* msg);
+    static void receive_message(SOCKET client);
+    #endif
 public:
     static void InitAR(Menu& menu);
     static void Draw();
-    static void Hit(GLint x, GLint y);
+    static bool Hit(GLint x, GLint y);
     static void Enable(std::vector<int>& menu_id);
 };

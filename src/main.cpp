@@ -251,7 +251,8 @@ void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		ARabout::Hit(x, y);
+		if (ARabout::Hit(x, gHeight - y))
+			return;
 		if (menu.Hit(x, gHeight - y))
 			return;
 		printf("%d %d\n", x, y);
