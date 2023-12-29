@@ -37,7 +37,7 @@ CG project imitating mouse assembly workshop.
 
 ### nurbs绘制机械臂
 
-![nurbs](.\media\nurbs.png)
+![nurbs](./media/nurbs.png)
 
 ### Obj导入
 
