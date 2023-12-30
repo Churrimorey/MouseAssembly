@@ -7,7 +7,7 @@
 #define PORT 5240
 #endif
 
-using namespace std;
+//using namespace std;
 
 bool ARabout::DrawAbout = false;
 bool ARabout::large_target = false;
@@ -37,13 +37,13 @@ void SubMenu::AddSubMenu(int menu_id) {
     sub_menu_.push_back(menu_id);
 }
 
-void CommandMenuItem::Hit(vector<int>& menu_id) {
+void CommandMenuItem::Hit(std::vector<int>& menu_id) {
     func_(menu_id);
 }
 
 Menu::Menu(int n_root_nemu_item) : n_root_nemu_item(n_root_nemu_item) {
     for (int i=0; i < n_menu_item_horizon; i++) {
-        vector<int> tmp;
+        std::vector<int> tmp;
         for (int j=0; j < n_menu_item_vertical; j++) {
             tmp.push_back(-1);
         }
@@ -52,7 +52,7 @@ Menu::Menu(int n_root_nemu_item) : n_root_nemu_item(n_root_nemu_item) {
     }
 
     for (int i=0; i < n_root_nemu_item; i++) {
-        CommandMenuItem* item = new CommandMenuItem("Root"+to_string(i), [](vector<int>& menu_id) {
+        CommandMenuItem* item = new CommandMenuItem("Root"+ std::to_string(i), [](std::vector<int>& menu_id) {
             printf("Root%d\n", menu_id[0]);
         });
         menu_items_.push_back(item);
@@ -155,19 +155,19 @@ void ARabout::InitAR(Menu& menu) {
     CommandMenuItem* about_menu = new CommandMenuItem("About", ARabout::Enable);
     menu.AddRootItem(about_menu);
     #ifndef MACOS
-    thread listen_thread;
-    listen_thread = thread(server_listen);
+    std::thread listen_thread;
+    listen_thread = std::thread(server_listen);
     listen_thread.detach();
 
-    CommandMenuItem* show_base = new CommandMenuItem("Show Base", [](vector<int>& menu_id) {
+    CommandMenuItem* show_base = new CommandMenuItem("Show Base", [](std::vector<int>& menu_id) {
 		send_message(client, "Show Base");
 	});
 
-    CommandMenuItem* show_tip = new CommandMenuItem("Show Tip", [](vector<int>& menu_id) {
+    CommandMenuItem* show_tip = new CommandMenuItem("Show Tip", [](std::vector<int>& menu_id) {
         send_message(client, "Show Tip");
     });
 
-    CommandMenuItem* show_battery = new CommandMenuItem("Show Battery", [](vector<int>& menu_id) {
+    CommandMenuItem* show_battery = new CommandMenuItem("Show Battery", [](std::vector<int>& menu_id) {
         send_message(client, "Show Battery");
     });
 
@@ -182,7 +182,7 @@ void ARabout::InitAR(Menu& menu) {
 void ARabout::server_listen() {
     int len;
 
-    thread thread_recv;
+    std::thread thread_recv;
 
     SOCKADDR_IN server_addr;
     SOCKADDR_IN client_addr;
@@ -208,7 +208,7 @@ void ARabout::server_listen() {
         len = sizeof(SOCKADDR);
         client = accept(server, (SOCKADDR*)&client_addr, &len);
 
-        thread_recv = thread(receive_message, client);
+        thread_recv = std::thread(receive_message, client);
         thread_recv.join();
     }
 }
@@ -252,13 +252,13 @@ bool ARabout::Hit(GLint x, GLint y) {
     }
 }
 
-void ARabout::Enable(vector<int>& menu_id) {
+void ARabout::Enable(std::vector<int>& menu_id) {
     DrawAbout = true;
 }
 
 #ifndef MACOS
 void ARabout::send_message(SOCKET client, const char* msg) {
-    cout << msg << endl;
+    std::cout << msg << std::endl;
     send(client, msg, strlen(msg), 0);
 }
 
@@ -270,7 +270,7 @@ void ARabout::receive_message(SOCKET client) {
         recv_buf[recv(client, recv_buf, 1459, 0)] = '\0';
         if (recv_buf[0] == '\0')
             break;
-        cout << recv_buf << endl;
+        std::cout << recv_buf << std::endl;
         if (strcmp(recv_buf, "target") == 0) {
             large_target = !large_target;
         }

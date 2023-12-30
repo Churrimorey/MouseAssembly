@@ -6,6 +6,20 @@ Mouse Robot::right_mouse_;
 Battery Robot::left_battery_;
 Battery Robot::right_battery_;
 
+extern GLUnurbsObj *theNurb;
+
+static GLfloat leftCtrlpoints[5][8][3] = { { { 0.0, -1.0,    0.0 },{ 1.0, -1.0,  0.0 },{ 1.0, 0.0,  0.0 },{ 1.0, 1.0,  0.0 },{ 0, 1.0,   0.0 },{ -1.0, 1.0,  0.0 },{ -1.0, 0.0,  0.0 },{ 0.0, -1.0,  0.0 } },
+									   { { 0.0, -0.95, -1.0 },{ 0.95 , -0.95 , -1.0 },{ 0.95 , 0.0, -1.0 },{ 0.95, 0.95, -1.0 },{ 0, 0.95 , -1.0 },{ -0.95 , 0.95, -1.0 },{ -1.8 , 0.0, -1.0 },{ 0.0 , -0.95 , -1.0 } },
+									   { { 0.0, -0.95, -2.0 },{ 0.95, -0.95, -2.0 },{ 0.95, 0.0, -2.0 },{ 0.92, 0.92, -2.0 },{ 0, 1.5 , -2.0 },{ -0.95, 0.95, -2.0 },{ -1.5, 0.0, -2.0 },{ 0.0, -0.95, -2.0 }, },
+									   { { 0.0, -0.9,  -3.0 },{ 0.9, -0.9, -3.0 },{ 0.9, 0.0, -3.0 },{ 0.9 , 0.9 , -3.0 },{ 0, 0.9 , -3.0 },{ -0.9, 0.9, -3.0 },{ -1.2, 0.0, -3.0 },{ 0.0, -0.9, -3.0 }, },
+									   { { 0.0, -0.88, -4.0 },{ 0.88 , -0.88 , -4.0 },{ 0.88 , 0.0, -4.0 },{ 0.88 , 0.88 , -4.0 },{ 0, 0.88 , -4.0 },{ -0.88 , 0.88, -4.0 },{ -1.0 , 0.0, -4.0 },{ 0.0 , -0.88 , -4.0 }, } };
+
+static GLfloat rightCtrlpoints[5][8][3] = { { { 0.0, -1.0,    0.0 },{ 1.0, -1.0,  0.0 },{ 1.0, 0.0,  0.0 },{ 1.0, 1.0,  0.0 },{ 0, 1.0,   0.0 },{ -1.0, 1.0,  0.0 },{ -1.0, 0.0,  0.0 },{ 0.0, -1.0,  0.0 } },
+										   { { 0.0, -0.95, -1.0 },{ 0.95 , -0.95 , -1.0 },{ 1.8 , 0.0, -1.0 },{ 0.95, 0.95, -1.0 },{ 0, 0.95 , -1.0 },{ -0.95 , 0.95, -1.0 },{ -0.95 , 0.0, -1.0 },{ 0.0 , -0.95 , -1.0 } },
+										   { { 0.0, -0.95, -2.0 },{ 0.95, -0.95, -2.0 },{ 1.5, 0.0, -2.0 },{ 0.92, 0.92, -2.0 },{ 0, 1.5 , -2.0 },{ -0.95, 0.95, -2.0 },{ -0.95, 0.0, -2.0 },{ 0.0, -0.95, -2.0 }, },
+										   { { 0.0, -0.9,  -3.0 },{ 0.9, -0.9, -3.0 },{ 1.2, 0.0, -3.0 },{ 0.9 , 0.9 , -3.0 },{ 0, 0.9 , -3.0 },{ -0.9, 0.9, -3.0 },{ -0.9, 0.0, -3.0 },{ 0.0, -0.9, -3.0 }, },
+										   { { 0.0, -0.88, -4.0 },{ 0.88 , -0.88 , -4.0 },{ 1.0 , 0.0, -4.0 },{ 0.88 , 0.88 , -4.0 },{ 0, 0.88 , -4.0 },{ -0.88 , 0.88, -4.0 },{ -0.88 , 0.0, -4.0 },{ 0.0 , -0.88 , -4.0 }, } };
+
 void RobotBase::Draw() const {
 	const auto& position = GetPosition();
 	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
@@ -26,20 +40,64 @@ void RobotBase::Draw() const {
 	}
 }
 
-void RobotArm::Draw() const {
+void RobotRightArm::Draw() const {
+	GLfloat s_knots[10] = { 0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0 };
+	GLfloat t_knots[16] = { 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0 };
+
 	const auto& position = GetPosition();
 	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
 	glRotatef(rotate_, 0.0f, 0.0f, 1.0f);
 
 	glPushMatrix();
 	Material::SetMaterial(Material::Arm);
-	GLUquadricObj* cylinder = gluNewQuadric();
+	/*GLUquadricObj* cylinder = gluNewQuadric();
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 	glScalef(0.6f, 0.6f, 0.6f);
 	gluCylinder(cylinder, 1.3, 1.3, 7.0, 10, 10);
 	DrawCircle(0.0f, 0.0f, 7.0f, 1.3f, 10);
 	DrawCircle(0.0f, 0.0f, 0.0f, 1.3f, 10);
-	gluDeleteQuadric(cylinder);
+	gluDeleteQuadric(cylinder);*/
+	glTranslatef(0.0f, -0.1f, 0.0f);
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	glScalef(1.1f, 1.1f, 1.1f);
+	gluBeginSurface(theNurb);
+	gluNurbsSurface(theNurb, 10, s_knots, 16, t_knots, 8 * 3, 3, &rightCtrlpoints[0][0][0], 5, 8, GL_MAP2_VERTEX_3);
+	gluEndSurface(theNurb);
+	glColor3f(1.0, 1.0, 0.0);
+	glPointSize(5.0);
+
+	glPopMatrix();
+	if (GetNext() != nullptr) {
+		GetNext()->Draw();
+	}
+}
+
+void RobotLeftArm::Draw() const {
+	GLfloat s_knots[10] = { 0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0 };
+	GLfloat t_knots[16] = { 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0 };
+
+	const auto& position = GetPosition();
+	glTranslatef(position.GetX(), position.GetY(), position.GetZ());
+	glRotatef(rotate_, 0.0f, 0.0f, 1.0f);
+
+	glPushMatrix();
+	Material::SetMaterial(Material::Arm);
+	/*GLUquadricObj* cylinder = gluNewQuadric();
+	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+	glScalef(0.6f, 0.6f, 0.6f);
+	gluCylinder(cylinder, 1.3, 1.3, 7.0, 10, 10);
+	DrawCircle(0.0f, 0.0f, 7.0f, 1.3f, 10);
+	DrawCircle(0.0f, 0.0f, 0.0f, 1.3f, 10);
+	gluDeleteQuadric(cylinder);*/
+	glTranslatef(0.0f, -0.1f, 0.0f);
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	glScalef(1.1f, 1.1f, 1.1f);
+	gluBeginSurface(theNurb);
+	gluNurbsSurface(theNurb, 10, s_knots, 16, t_knots, 8 * 3, 3, &leftCtrlpoints[0][0][0], 5, 8, GL_MAP2_VERTEX_3);
+	gluEndSurface(theNurb);
+	glColor3f(1.0, 1.0, 0.0);
+	glPointSize(5.0);
+
 	glPopMatrix();
 	if (GetNext() != nullptr) {
 		GetNext()->Draw();
@@ -68,13 +126,13 @@ void Robot::DrawRobot() const {
 }
 
 Robot* Robot::CreateLeftRobot() {
-	Robot* root = new RobotBase({ -6.5f, -2.5f, 1.0f }, 0.0f);
+	Robot* root = new RobotBase({ -6.5f, -3.0f, 1.0f }, 0.0f);
 	auto robot = root;
-	robot->SetNext(new RobotArm({ 0.0f, 0.8f, 0.0f }, -23.0f));
+	robot->SetNext(new RobotRightArm({ 0.0f, 0.8f, 0.0f }, -23.0f));
 	robot = robot->GetNext();
 	static_cast<RobotArm*>(robot)->SetPrev(root);
 	auto temp = robot;
-	robot->SetNext(new RobotArm({ 0.0f, 4.5f, 0.0f }, -123.0));
+	robot->SetNext(new RobotRightArm({ 0.0f, 4.5f, 0.0f }, -123.0));
 	robot = robot->GetNext();
 	static_cast<RobotArm*>(robot)->SetPrev(temp);
 	robot->SetNext(new RobotFinger({ 0.0f, 4.8f, -0.6f }));
@@ -84,13 +142,13 @@ Robot* Robot::CreateLeftRobot() {
 }
 
 Robot* Robot::CreateRightRobot() {
-	Robot* root = new RobotBase({ 6.5f, -2.5f, 1.0f }, 0.0f);
+	Robot* root = new RobotBase({ 6.5f, -3.0f, 1.0f }, 0.0f);
 	auto robot = root;
-	robot->SetNext(new RobotArm({ 0.0f, 0.8f, 0.0f }, 23.0f));
+	robot->SetNext(new RobotLeftArm({ 0.0f, 0.8f, 0.0f }, 23.0f));
 	robot = robot->GetNext();
 	static_cast<RobotArm*>(robot)->SetPrev(root);
 	auto temp = robot;
-	robot->SetNext(new RobotArm({ 0.0f, 4.5f, 0.0f }, 123.0));
+	robot->SetNext(new RobotLeftArm({ 0.0f, 4.5f, 0.0f }, 123.0));
 	robot = robot->GetNext();
 	static_cast<RobotArm*>(robot)->SetPrev(temp);
 	robot->SetNext(new RobotFinger({ 0.0f, 4.8f, -0.6f }));
