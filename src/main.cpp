@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include "Animation.h"
 #include "mouse.h"
 #include "utils.h"
 #include "drawings.h"
@@ -39,11 +40,7 @@ bool bMouseHead = false;
 bool bBattery = false;
 GLint holeList[25];
 GLint batterList[25];
-std::unique_ptr<Robot> left_robot;    // ���е��
-std::unique_ptr<Robot> right_robot;   // �һ�е��
-std::vector<MousePlate> plates;
-std::vector<Battery> battries;
-Clock myclock{ true };
+Animation animation;
 Menu menu(2);
 
 Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
@@ -64,8 +61,8 @@ void init()
 	texload(0, (char*)"table.bmp");
 	texload(1, (char*)"battery.bmp");
 	texload(2, (char*)"ar.bmp");
-	left_robot.reset(Robot::CreateLeftRobot());
-	right_robot.reset(Robot::CreateRightRobot());
+
+	MousePlate::FillPlates(animation.GetMousePlates());
 
 	Light::InitLight(menu);
 	Material::InitMaterial();
@@ -93,9 +90,9 @@ void DrawScene()
 
 	DrawTable();
 
-	left_robot->DrawRobot();
+	animation.GetLeftRobot()->DrawRobot();
 
-	right_robot->DrawRobot();
+	animation.GetRightRobot()->DrawRobot();
 
 	Material::SetMaterial(Material::Desk);
 	DrawDesk();
@@ -105,34 +102,42 @@ void DrawScene()
 
 	if (bBattery)
 	{
-		Battery::DrawBatterys(battries);
+		Battery::FillBatterys(animation.GetBattery());
+		bBattery = false;
 	}
+	Battery::DrawBatterys(animation.GetBattery());
 	Material::SetMaterial(Material::Plate);
-	MousePlate::DrawPlates(plates);
+	MousePlate::DrawPlates(animation.GetMousePlates());
 
 	if (bMouseHead)
 	{
-		Material::SetMaterial(Material::MouseHead);
-		plates[0].DrawMouseHeads();
+		animation.GetMousePlates()[0].FillMouseHeads();
+		bMouseHead = false;
 	}
+	Material::SetMaterial(Material::MouseHead);
+	animation.GetMousePlates()[0].DrawMouseHeads();
 
 	if (bMouseBase)
 	{
-		Material::SetMaterial(Material::MouseBase);
-		plates[2].DrawMouseBases();
+		animation.GetMousePlates()[2].FillMouseBases();
+		bMouseBase = false;
 	}
-
-	glPushMatrix();
-	//printModelViewMatrix();
-	//glLoadIdentity();
-	glTranslatef(2.0f, -3.0f, 5.5f);
-	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	glScalef(0.60f, 0.60f, 0.60f);
-	Material::SetMaterial(Material::MouseHead);
-	head.DrawMouse(HEAD);
 	Material::SetMaterial(Material::MouseBase);
-	base.DrawMouse(BASE);
-	glPopMatrix();
+	animation.GetMousePlates()[2].DrawMouseBases();
+
+	animation.GetMousePlates()[1].DrawMouses();
+
+	//glPushMatrix();
+	////printModelViewMatrix();
+	////glLoadIdentity();
+	//glTranslatef(2.0f, -3.0f, 5.5f);
+	//glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+	//glScalef(0.60f, 0.60f, 0.60f);
+	//Material::SetMaterial(Material::MouseHead);
+	//head.DrawMouse(HEAD);
+	//Material::SetMaterial(Material::MouseBase);
+	//base.DrawMouse(BASE);
+	//glPopMatrix();
 }
 
 void DrawEditBar()
@@ -337,27 +342,10 @@ void redraw()
 	glTranslatef(0.8f, 0.0f, 0.0f);
 	glScalef(0.4, 0.4, 0.4);
 	DrawScene();
-	myclock.update();
-	if (!plates[2].GetMouses().empty()) {
-		if (Robot::UpdateLeftPositionToMouse(*left_robot, plates[2].GetMouses()[0], myclock.GetElapsedTime())) {
-			std::cout << true << std::endl;
-			plates[2].GetMouses().erase(plates[2].GetMouses().begin());
-		}
+	if (!animation.GetMousePlates()[2].GetMouses().empty()) {
+		animation.SetUpdate(true);
 	}
-	if (!plates[0].GetMouses().empty()) {
-		if (Robot::UpdateRightPositionToMouse(*right_robot, plates[0].GetMouses()[0], myclock.GetElapsedTime())) {
-			std::cout << true << std::endl;
-			plates[0].GetMouses().erase(plates[0].GetMouses().begin());
-		}
-	}
-	if (!battries.empty()) {
-		if (Robot::UpdateLeftPositionToBattery(*left_robot, Robot::GetClosestBattery(*left_robot, battries), myclock.GetElapsedTime())) {
-			std::cout << true << std::endl;
-		}
-		if (Robot::UpdateRightPositionToBattery(*right_robot, Robot::GetClosestBattery(*right_robot, battries), myclock.GetElapsedTime())) {
-			std::cout << true << std::endl;
-		}
-	}
+	animation.Update();
 	glPopMatrix();
 
 	glPushMatrix();
@@ -411,7 +399,6 @@ int main(int argc, char* argv[])
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(800, 480);
 	int windowHandle = glutCreateWindow("Mouse Assembly Workshop");
-
 	GenHoleList();
 	init();
 	glutDisplayFunc(redraw);

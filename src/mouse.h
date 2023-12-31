@@ -16,6 +16,11 @@ public:
 	void Draw() const;
 
 	const Vec3& GetPosition() const { return position_; }
+
+	void SetPosition(const Vec3& position) { position_ = position;  }
+
+	void SetType(Type type) { type_ = type; }
+
 	void DrawMouse(Type type)const;
 private:
 	ObjLoader base;
@@ -28,15 +33,23 @@ class MousePlate {
 public:
 	static void DrawPlates(std::vector<MousePlate> &plates);
 
+	static void FillPlates(std::vector<MousePlate>& plates);
+
 	MousePlate(const Vec3& position) : position_(position) {};
 
 	void DrawMousePlates() const;
 
 	std::vector<class Mouse>& GetMouses() { return mouse_;  }
 
-	void DrawMouseHeads();
+	void DrawMouseHeads() const;
 
-	void DrawMouseBases();
+	void FillMouseHeads();
+
+	void DrawMouseBases() const;
+
+	void FillMouseBases();
+
+	void DrawMouses() const;
 
 private:
 	std::vector<class Mouse> mouse_;

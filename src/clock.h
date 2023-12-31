@@ -11,6 +11,8 @@ public:
 
 	double GetElapsedTime() const;
 
+	void SetUpdate(bool update) { update_ = update; }
+
 private:
 	std::chrono::time_point<std::chrono::steady_clock> last_time_;
 	std::chrono::duration<double> elapsed_time_;

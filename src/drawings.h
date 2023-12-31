@@ -6,7 +6,7 @@
 #include <vector>
 #include "Vec3.h"
 
-#define PI 3.14159
+#define PI 3.1415926535
 
 extern unsigned int texture[3];
 extern GLint holeList[25];
@@ -33,6 +33,8 @@ public:
 
 	static void DrawBatterys(std::vector<Battery>& batteries);
 
+	static void FillBatterys(std::vector<Battery>& batteries);
+
 	static void DrawBattery(float x, float y, float z) {
 		Battery battery(Vec3{ x, y, z });
 		battery.Draw();
@@ -43,6 +45,8 @@ public:
 	Battery(const Vec3 &position) : position_(position) {}
 
 	const Vec3& GetPosition() const { return position_; }
+
+	void SetPosition(const Vec3& position) { position_ = position; }
 
 	void Draw() const;
 

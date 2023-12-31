@@ -297,10 +297,6 @@ void Battery::Draw() const {
 }
 
 void Battery::DrawBatterys(std::vector<Battery>& batteries) {
-	for (auto& position : positions) {
-		batteries.emplace_back(Vec3{ position[0], position[1], position[2] });
-	}
-
 	glPushMatrix();
 	glTranslatef(0.0f, -3.0f, 0.0f);
 
@@ -311,6 +307,11 @@ void Battery::DrawBatterys(std::vector<Battery>& batteries) {
 	glPopMatrix();
 }
 
+void Battery::FillBatterys(std::vector<Battery>& batteries) {
+	for (auto& position : positions) {
+		batteries.emplace_back(Vec3{ position[0], position[1], position[2] });
+	}
+}
 
 void DrawBox()
 {

@@ -46,23 +46,33 @@ void Mouse::Draw() const {
 	glPopMatrix();
 }
 
-void MousePlate::DrawMouseHeads() {
-	mouse_.emplace_back(Vec3{ 2.5f, -2.5f, -2.5f }, HEAD);
-	mouse_.emplace_back(Vec3{ 4.0f, -2.5f, -2.5f }, HEAD);
-	mouse_.emplace_back(Vec3{ 5.5f, -2.5f, -2.5f }, HEAD);
-	mouse_.emplace_back(Vec3{ 7.0f, -2.5f, -2.5f }, HEAD);
-	
+void MousePlate::DrawMouseHeads() const {
 	for (auto& head : mouse_) {
 		head.Draw();
 	}
 }
 
-void MousePlate::DrawMouseBases() {
+void MousePlate::FillMouseHeads() {
+	mouse_.emplace_back(Vec3{ 2.5f, -2.5f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 4.0f, -2.5f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 5.5f, -2.5f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 7.0f, -2.5f, -2.5f }, HEAD);
+}
+
+void MousePlate::DrawMouseBases() const {
+	for (auto& head : mouse_) {
+		head.Draw();
+	}
+}
+
+void MousePlate::FillMouseBases() {
 	mouse_.emplace_back(Vec3{ -3.0f, -2.5f, 4.0f }, BASE);
 	mouse_.emplace_back(Vec3{ -4.5f, -2.5f, 4.0f }, BASE);
 	mouse_.emplace_back(Vec3{ -6.0f, -2.5f, 4.0f }, BASE);
 	mouse_.emplace_back(Vec3{ -7.5f, -2.5f, 4.0f }, BASE);
+}
 
+void MousePlate::DrawMouses() const {
 	for (auto& head : mouse_) {
 		head.Draw();
 	}
@@ -71,14 +81,17 @@ void MousePlate::DrawMouseBases() {
 void MousePlate::DrawPlates(std::vector<MousePlate>& plates) {
 	glPushMatrix();
 
-	plates.emplace_back(Vec3{ -5.0f, -3.0f, 4.0f });
-	plates.emplace_back(Vec3{ 5.0f, -3.0f, 4.0f });
-	plates.emplace_back(Vec3{ 5.0f, -3.0f, -3.0f });
 	for (auto& plate : plates) {
 		plate.DrawMousePlates();
 	}
 
 	glPopMatrix();
+}
+
+void MousePlate::FillPlates(std::vector<MousePlate>& plates) {
+	plates.emplace_back(Vec3{ -5.0f, -3.0f, 4.0f });
+	plates.emplace_back(Vec3{ 5.0f, -3.0f, 4.0f });
+	plates.emplace_back(Vec3{ 5.0f, -3.0f, -3.0f });
 }
 
 //glClearColor(0.2, 0.55, 1.0, 1);

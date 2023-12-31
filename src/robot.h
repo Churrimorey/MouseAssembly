@@ -13,11 +13,23 @@ class Robot {
 public:
     static Mouse left_mouse_;
 
+    static bool has_left_mouse_;
+
     static Mouse right_mouse_;
+
+    static bool has_right_mouse_;
 
     static Battery left_battery_;
 
+    static bool has_left_battery_;
+
     static Battery right_battery_;
+
+    static bool has_right_battery_;
+
+    static Mouse mouse_;
+
+    static bool has_mouse_;
 
     explicit Robot(const Vec3& position, Robot* next = nullptr) : position_(position), next_(next) {}
 
@@ -51,6 +63,16 @@ public:
 
     static bool UpdateRightPositionToBattery(Robot& robot, const Battery& destination, double elapsed_time);
 
+    static bool UpdateLeftPositionMouseToWorkPlace(Robot& robot, const Vec3& destination, double elapsed_time);
+
+    static bool UpdateLeftPositionBatteryToWorkPlace(Robot& robot, const Vec3& destination, double elapsed_time);
+
+    static bool UpdateRightPositionMouseToWorkPlace(Robot& robot, const Vec3& destination, double elapsed_time);
+
+    static bool UpdateRightPositionBatteryToWorkPlace(Robot& robot, const Vec3& destination, double elapsed_time);
+
+    static bool UpdateRightPositionToFinal(Robot& robot, const Vec3& destination, double elapsed_time);
+
     static void UpdateLeftPositionToMouse(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
 
     static void UpdateRightPositionToMouse(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
@@ -58,6 +80,17 @@ public:
     static void UpdateLeftPositionToBattery(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
 
     static void UpdateRightPositionToBattery(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateLeftPositionMouseToWorkPlace(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateLeftPositionBatteryToWorkPlace(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateRightPositionMouseToWorkPlace(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateRightPositionBatteryToWorkPlace(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+
+    static void UpdateRightPositionToFinal(RobotBase& base, RobotArm& arm1, RobotArm& arm2, const Vec3& position);
+    
 
 private:
     Vec3 position_;
@@ -82,9 +115,9 @@ private:
 
 class RobotArm : public Robot {
 public:
-    /*static GLfloat cone_mat[];
+    static GLfloat cone_mat[];
 
-    static GLUquadricObj* cylinder;*/
+    static GLUquadricObj* cylinder;
 
     explicit RobotArm(const Vec3& position, float rotate, Robot* next = nullptr) : Robot(position, next), prev_(nullptr), rotate_(rotate) {}
 
@@ -107,21 +140,22 @@ class RobotRightArm : public RobotArm {
 public:
 	explicit RobotRightArm(const Vec3& position, float rotate, Robot* next = nullptr) : RobotArm(position,rotate,next){}
 	void Draw() const override;
-	static GLfloat ctrlpoints[5][8][3];
 };
 
 class RobotLeftArm : public RobotArm {
 public:
 	explicit RobotLeftArm(const Vec3& position, float rotate, Robot* next = nullptr) : RobotArm(position, rotate, next) {}
 	void Draw() const override;
-	static GLfloat ctrlpoints[5][8][3];
 };
 
 class RobotFinger : public Robot {
 public:
-    explicit RobotFinger(const Vec3& position, Robot* next = nullptr) : Robot(position, next) {}
+    explicit RobotFinger(const Vec3& position, bool is_left = true, Robot* next = nullptr) : Robot(position, next), is_left_(is_left) {}
 
     void Draw() const override;
+
+private:
+    bool is_left_;
 };
 
 #endif
