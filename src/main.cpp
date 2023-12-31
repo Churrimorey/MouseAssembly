@@ -125,7 +125,7 @@ void DrawScene()
 	glPushMatrix();
 	//printModelViewMatrix();
 	//glLoadIdentity();
-	glTranslatef(2.0f, -2.5f, 5.5f);
+	glTranslatef(2.0f, -3.0f, 5.5f);
 	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	glScalef(0.60f, 0.60f, 0.60f);
 	Material::SetMaterial(Material::MouseHead);
