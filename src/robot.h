@@ -82,9 +82,9 @@ private:
 
 class RobotArm : public Robot {
 public:
-    static GLfloat cone_mat[];
+    /*static GLfloat cone_mat[];
 
-    static GLUquadricObj* cylinder;
+    static GLUquadricObj* cylinder;*/
 
     explicit RobotArm(const Vec3& position, float rotate, Robot* next = nullptr) : Robot(position, next), prev_(nullptr), rotate_(rotate) {}
 
@@ -107,12 +107,14 @@ class RobotRightArm : public RobotArm {
 public:
 	explicit RobotRightArm(const Vec3& position, float rotate, Robot* next = nullptr) : RobotArm(position,rotate,next){}
 	void Draw() const override;
+	static GLfloat ctrlpoints[5][8][3];
 };
 
 class RobotLeftArm : public RobotArm {
 public:
 	explicit RobotLeftArm(const Vec3& position, float rotate, Robot* next = nullptr) : RobotArm(position, rotate, next) {}
 	void Draw() const override;
+	static GLfloat ctrlpoints[5][8][3];
 };
 
 class RobotFinger : public Robot {
