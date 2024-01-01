@@ -53,10 +53,10 @@ void MousePlate::DrawMouseHeads() const {
 }
 
 void MousePlate::FillMouseHeads() {
-	mouse_.emplace_back(Vec3{ 2.5f, -2.5f, -2.5f }, HEAD);
-	mouse_.emplace_back(Vec3{ 4.0f, -2.5f, -2.5f }, HEAD);
-	mouse_.emplace_back(Vec3{ 5.5f, -2.5f, -2.5f }, HEAD);
-	mouse_.emplace_back(Vec3{ 7.0f, -2.5f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 2.5f, -3.0f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 4.0f, -3.0f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 5.5f, -3.0f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 7.0f, -3.0f, -2.5f }, HEAD);
 }
 
 void MousePlate::DrawMouseBases() const {
@@ -66,10 +66,10 @@ void MousePlate::DrawMouseBases() const {
 }
 
 void MousePlate::FillMouseBases() {
-	mouse_.emplace_back(Vec3{ -3.0f, -2.5f, 4.0f }, BASE);
-	mouse_.emplace_back(Vec3{ -4.5f, -2.5f, 4.0f }, BASE);
-	mouse_.emplace_back(Vec3{ -6.0f, -2.5f, 4.0f }, BASE);
-	mouse_.emplace_back(Vec3{ -7.5f, -2.5f, 4.0f }, BASE);
+	mouse_.emplace_back(Vec3{ -3.0f, -3.0f, 4.0f }, BASE);
+	mouse_.emplace_back(Vec3{ -4.5f, -3.0f, 4.0f }, BASE);
+	mouse_.emplace_back(Vec3{ -6.0f, -3.0f, 4.0f }, BASE);
+	mouse_.emplace_back(Vec3{ -7.5f, -3.0f, 4.0f }, BASE);
 }
 
 void MousePlate::DrawMouses() const {
