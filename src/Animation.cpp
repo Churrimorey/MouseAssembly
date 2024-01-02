@@ -136,4 +136,10 @@ void Animation::UpdateMouseHead(double time) {
 
 	static_cast<RobotBase*>(right_robot_.get())->SetRotate(static_cast<RobotBase*>(right_robot_.get())->GetRotate() - right_base_rotate_ * time);
 	static_cast<RobotArm*>(right_robot_->GetNext()->GetNext())->SetRotate(static_cast<RobotArm*>(right_robot_->GetNext()->GetNext())->GetRotate() - right_arm2_rotate_ * time);
+
+	Robot::left_mouse_.SetPosition( {0.0f, -0.2f, -1.2f} );
+	Robot::right_mouse_.SetPosition( {0.0f, 0.0f, -1.2f} );
+	Robot::left_battery_.SetPosition( {0.0f, 0.0f, -1.0f} );
+	Robot::right_battery_.SetPosition( {0.0f, 0.0f, -1.0f} );
+	Robot::mouse_.SetPosition( {0.0f, 0.0f, -1.2f} );
 }
