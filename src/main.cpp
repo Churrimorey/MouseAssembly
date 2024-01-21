@@ -20,6 +20,7 @@
 #define STEP 1 // 视角平移的系数
 #define GLUT_KEY_SHIFT_L 97
 #define GLUT_KEY_SHIFT_R 98
+#define Play 1
 int gHeight;
 int gWidth;
 
@@ -38,6 +39,7 @@ unsigned int texture[3];
 bool bMouseBase = false;
 bool bMouseHead = false;
 bool bBattery = false;
+bool bAnim = false;
 GLint holeList[25];
 GLint batterList[25];
 Animation animation;
@@ -47,6 +49,34 @@ Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
 Mouse base = Mouse(Vec3(0, 0, 0), BASE);
 
 GLUnurbsObj *theNurb;
+
+void processMenuEvents(int option) {
+	//option 就是传递过来的value的值。
+	switch (option) {
+	case Play:
+		bAnim = true;
+		break;
+	default:
+		break;
+}
+
+	//glutPostRedisplay();
+}
+
+
+void createGLUTMenus() {
+
+	int menu;
+
+	// 创建菜单并告诉GLUT，processMenuEvents处理菜单事件。
+	menu = glutCreateMenu(processMenuEvents);
+
+	//给菜单增加条目
+	glutAddMenuEntry("Run", Play);
+
+	// 把菜单和鼠标右键关联起来。
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
 
 void init()
 {
@@ -408,6 +438,7 @@ int main(int argc, char* argv[])
 	glutIdleFunc(idle);
 	glutMouseFunc(mouse);
 	glutMotionFunc(onMouseMove);
+	createGLUTMenus();
 
 	glutMainLoop();
 	return 0;
