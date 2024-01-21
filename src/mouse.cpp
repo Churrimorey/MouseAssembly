@@ -1,6 +1,8 @@
 #include "mouse.h"
 
 //const float g_lightPos[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+Vec3 MousePlate::mouseHeadPos[4] = { Vec3{ 2.5f, -3.0f, -2.5f }, Vec3{ 4.0f, -3.0f, -2.5f }, Vec3{ 5.5f, -3.0f, -2.5f }, Vec3{ 7.0f, -3.0f, -2.5f } };
+Vec3 MousePlate::mouseBasePos[4] = { Vec3{ -3.0f, -3.0f, 4.0f }, Vec3{ -4.5f, -3.0f, 4.0f }, Vec3{ -6.0f, -3.0f, 4.0f }, Vec3{ -7.5f, -3.0f, 4.0f } };
 
 Mouse::Mouse(const Vec3& position, Type type) : position_(position), type_(type) {
 	if (type == HEAD) {
@@ -53,10 +55,12 @@ void MousePlate::DrawMouseHeads() const {
 }
 
 void MousePlate::FillMouseHeads() {
-	mouse_.emplace_back(Vec3{ 2.5f, -3.0f, -2.5f }, HEAD);
+	/*mouse_.emplace_back(Vec3{ 2.5f, -3.0f, -2.5f }, HEAD);
 	mouse_.emplace_back(Vec3{ 4.0f, -3.0f, -2.5f }, HEAD);
 	mouse_.emplace_back(Vec3{ 5.5f, -3.0f, -2.5f }, HEAD);
-	mouse_.emplace_back(Vec3{ 7.0f, -3.0f, -2.5f }, HEAD);
+	mouse_.emplace_back(Vec3{ 7.0f, -3.0f, -2.5f }, HEAD);*/
+	mouse_.emplace_back(mouseHeadPos[mouse_.size()], HEAD);
+	empty_ = false;
 }
 
 void MousePlate::DrawMouseBases() const {
@@ -66,10 +70,12 @@ void MousePlate::DrawMouseBases() const {
 }
 
 void MousePlate::FillMouseBases() {
-	mouse_.emplace_back(Vec3{ -3.0f, -3.0f, 4.0f }, BASE);
+	/*mouse_.emplace_back(Vec3{ -3.0f, -3.0f, 4.0f }, BASE);
 	mouse_.emplace_back(Vec3{ -4.5f, -3.0f, 4.0f }, BASE);
 	mouse_.emplace_back(Vec3{ -6.0f, -3.0f, 4.0f }, BASE);
-	mouse_.emplace_back(Vec3{ -7.5f, -3.0f, 4.0f }, BASE);
+	mouse_.emplace_back(Vec3{ -7.5f, -3.0f, 4.0f }, BASE);*/
+	mouse_.emplace_back(mouseBasePos[mouse_.size()], BASE);
+	empty_ = false;
 }
 
 void MousePlate::DrawMouses() const {

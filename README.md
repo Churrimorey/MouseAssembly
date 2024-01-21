@@ -79,3 +79,9 @@ CG project imitating mouse assembly workshop.
 下图是完成效果：
 
 ![image-20231227144345583](./media/image-20231227144345583.png)
+
+## 编辑与执行切换
+
+右键->Run
+
+组装完一个或者遇到意外回到编辑模式
