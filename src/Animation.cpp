@@ -33,7 +33,7 @@ void Animation::Update() {
 			left_arm1_rotate_ = static_cast<RobotArm*>(left_robot_->GetNext())->GetRotate() + 30.0;
 			left_arm2_rotate_ = static_cast<RobotArm*>(left_robot_->GetNext()->GetNext())->GetRotate() + 110.0;
 			Robot::has_left_mouse_ = false;
-			Robot::left_mouse_.SetPosition(Vec3{ 0.0, -1.3f, 2.0f });
+			Robot::left_mouse_.SetPosition(Vec3{ -0.0f, -1.3f, 2.0f });
 		}
 		break;
 	}
@@ -232,9 +232,9 @@ void Animation::UpdateRightHead(double time) {
 	static_cast<RobotBase*>(right_robot_.get())->SetRotate(static_cast<RobotBase*>(right_robot_.get())->GetRotate() - right_base_rotate_ * time);
 	static_cast<RobotArm*>(right_robot_->GetNext()->GetNext())->SetRotate(static_cast<RobotArm*>(right_robot_->GetNext()->GetNext())->GetRotate() - right_arm2_rotate_ * time);
 
-	Robot::left_mouse_.SetPosition( {0.0f, -0.2f, -1.2f} );
+	/*Robot::left_mouse_.SetPosition( {0.0f, -0.2f, -1.2f} );
 	Robot::right_mouse_.SetPosition( {0.0f, 0.0f, -1.2f} );
 	Robot::left_battery_.SetPosition( {0.0f, 0.0f, -1.0f} );
 	Robot::right_battery_.SetPosition( {0.0f, 0.0f, -1.0f} );
-	Robot::mouse_.SetPosition( {0.0f, 0.0f, -1.2f} );
+	Robot::mouse_.SetPosition( {0.0f, 0.0f, -1.2f} );*/
 }
