@@ -12,6 +12,56 @@ GLfloat Light::light_ambient_[LightType::Count][4];
 GLfloat Light::light_diffuse_[LightType::Count][4];
 GLfloat Light::light_specular_[LightType::Count][4];
 
+void Light::DrawSkyBox() {
+    glPushMatrix();
+    glRotatef(22.0f, 0.0f, 1.0f, 0.0f);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture[3]); // nx
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f, -100.0f, 100.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-100.0f, -100.0f, -100.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-100.0f, 100.0f, -100.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-100.0f, 100.0f, 100.0f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, texture[4]); // ny
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f, -100.0f, 100.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(100.0f, -100.0f, 100.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(100.0f, -100.0f, -100.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-100.0f, -100.0f, -100.0f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, texture[5]); // nz
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(100.0f, -100.0f, 100.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-100.0f, -100.0f, 100.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-100.0f, 100.0f, 100.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(100.0f, 100.0f, 100.0f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, texture[6]); // px
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(100.0f, -100.0f, -100.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(100.0f, -100.0f, 100.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(100.0f, 100.0f, 100.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(100.0f, 100.0f, -100.0f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, texture[7]); // py
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f, 100.0f, -100.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(100.0f, 100.0f, -100.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(100.0f, 100.0f, 100.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-100.0f, 100.0f, 100.0f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, texture[8]); // pz
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f, -100.0f, -100.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(100.0f, -100.0f, -100.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(100.0f, 100.0f, -100.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-100.0f, 100.0f, -100.0f);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+}
+
 void Light::InitLight(Menu& menu) {
     glEnable(GL_LIGHTING);
 
@@ -97,6 +147,8 @@ void Light::InitLight(Menu& menu) {
         light->AddSubMenu(i_light_right);
 		light_menu->AddSubMenu(menu.AddItem(light));
 	}
+
+
 }
 
 void Light::FlushLight() {

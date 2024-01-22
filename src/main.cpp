@@ -34,7 +34,7 @@ static float c = PI / 180.0;    //弧度和角度转换参数
 double step = 0;
 double height = 0;
 
-unsigned int texture[3];
+unsigned int texture[9];
 bool bMouseBase = false;
 bool bMouseHead = false;
 bool bBattery = false;
@@ -57,10 +57,16 @@ void init()
 	glEnable(GL_MULTISAMPLE_ARB);
 	#endif
 
-	glGenTextures(3, texture);
+	glGenTextures(9, texture);
 	texload(0, (char*)"table.bmp");
 	texload(1, (char*)"battery.bmp");
 	texload(2, (char*)"ar.bmp");
+	texload(3, (char*)"nx.bmp");
+	texload(4, (char*)"ny.bmp");
+	texload(5, (char*)"nz.bmp");
+	texload(6, (char*)"px.bmp");
+	texload(7, (char*)"py.bmp");
+	texload(8, (char*)"pz.bmp");
 
 	MousePlate::FillPlates(animation.GetMousePlates());
 
@@ -341,6 +347,7 @@ void redraw()
 	glMatrixMode(GL_MODELVIEW);
 	glTranslatef(0.8f, 0.0f, 0.0f);
 	glScalef(0.4, 0.4, 0.4);
+	Light::DrawSkyBox();
 	DrawScene();
 	if (!animation.GetMousePlates()[2].GetMouses().empty()) {
 		animation.SetUpdate(true);
@@ -383,10 +390,10 @@ void redraw()
 	glLoadIdentity();
 	gluOrtho2D(0, gWidth, 0, gHeight);
 	glMatrixMode(GL_MODELVIEW);
-	glColor3f(1.0f,0.0f,0.0f);
+	Material::SetMaterial(Material::Unknown);	
 	glPointSize(10.0f);
 	glBegin(GL_POINTS);
-	glVertex3f(gWidth / 2, gHeight / 2, 0.0f);
+	glVertex3f((gWidth - 80) / 2 + 80, gHeight / 2, 0.0f);
 	glEnd();
 	glPopMatrix();
 

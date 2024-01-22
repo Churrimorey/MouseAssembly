@@ -5,7 +5,7 @@
 #include <gl/glut.h>
 #define BITMAP_ID 0x4D42
 
-extern unsigned int texture[3];
+extern unsigned int texture[9];
 
 #ifdef MACOS
 #include <sys/types.h>

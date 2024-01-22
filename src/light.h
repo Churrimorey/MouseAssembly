@@ -24,6 +24,7 @@ private:
     static GLfloat light_specular_[LightType::Count][4];
 
 public:
+    static void DrawSkyBox();
     static void InitLight(Menu& menu);
     static void FlushLight();
     static void TurnOnLight(int light_id);

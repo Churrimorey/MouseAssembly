@@ -6,7 +6,7 @@
 #include <winsock.h>
 #endif
 
-extern unsigned int texture[3];
+extern unsigned int texture[9];
 
 class MenuItem {
     std::string name;
