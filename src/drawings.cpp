@@ -126,7 +126,7 @@ void DrawDesk()
 {
 	glPushMatrix();
 	glTranslatef(0.0f, -3.2f, 3.5f);
-	DrawCuboid(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 2.0f, 1.0f);
+	DrawCuboid(0.5f, 0.0f, -0.8f, 1.0f, 2.0f, 2.0f, 1.0f);
 	glPopMatrix();
 }
 

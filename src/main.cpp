@@ -20,6 +20,7 @@
 #define STEP 1 // 视角平移的系数
 #define GLUT_KEY_SHIFT_L 97
 #define GLUT_KEY_SHIFT_R 98
+#define PLAY 1
 int gHeight;
 int gWidth;
 
@@ -38,6 +39,7 @@ unsigned int texture[9];
 bool bMouseBase = false;
 bool bMouseHead = false;
 bool bBattery = false;
+bool bAnim = false;
 GLint holeList[25];
 GLint batterList[25];
 Animation animation;
@@ -47,6 +49,30 @@ Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
 Mouse base = Mouse(Vec3(0, 0, 0), BASE);
 
 GLUnurbsObj *theNurb;
+
+void processMenuEvents(int option) {
+	switch (option) {
+	case PLAY:
+		bAnim = true;
+		break;
+	default:
+		break;
+}
+
+	//glutPostRedisplay();
+}
+
+
+void createGLUTMenus() {
+
+	int menu;
+
+	menu = glutCreateMenu(processMenuEvents);
+
+	glutAddMenuEntry("Run", PLAY);
+
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
 
 void init()
 {
@@ -277,11 +303,11 @@ void mouse(int button, int state, int x, int y)
 		{
 			if (y >= 0 && y <= 86)
 			{
-				bMouseBase = true;
+				bMouseHead = true;
 			}
 			else if (y <= 175)
 			{
-				bMouseHead = true;
+				bMouseBase = true;
 			}
 			else if (y <= 252)
 			{
@@ -328,7 +354,13 @@ void redraw()
 
 	glLoadIdentity();
 	glPushMatrix();
-	glViewport(80, 0, gWidth - 80, gHeight);
+	if (bAnim && !animation.GetMousePlates()[2].IsEmpty()) {
+		glViewport(0, 0, gWidth, gHeight);
+	}
+	else
+	{
+		glViewport(80, 0, gWidth - 80, gHeight);
+	}
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	float whRatio = (GLfloat)(gWidth - 80) / (GLfloat)gHeight;
@@ -345,32 +377,52 @@ void redraw()
 	//gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0.0, 1.0, 0.0);
 
 	glMatrixMode(GL_MODELVIEW);
-	glTranslatef(0.8f, 0.0f, 0.0f);
-	glScalef(0.4, 0.4, 0.4);
+	if (bAnim && !animation.GetMousePlates()[2].IsEmpty()) {
+		glTranslatef(0.0f, 0.0f, 0.0f);
+		glScalef(0.5, 0.5, 0.5);
+	}
+	else {
+		glTranslatef(0.8f, 0.0f, 0.0f);
+		glScalef(0.4, 0.4, 0.4);
+	}
 	Light::DrawSkyBox();
 	DrawScene();
-	if (!animation.GetMousePlates()[2].GetMouses().empty()) {
-		animation.SetUpdate(true);
+	if (bAnim)
+	{
+		if (!animation.GetMousePlates()[2].IsEmpty()) {
+			animation.SetUpdate(true);
+		}
+		else
+		{
+			bAnim = false;
+		}
+	}
+	else
+	{
+		animation.SetUpdate(false);
 	}
 	animation.Update();
 	glPopMatrix();
 
-	glPushMatrix();
-	glViewport(0, 0, gWidth, gHeight);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	//whRatio = (GLfloat)gWidth / (GLfloat)gHeight;
-	//gluPerspective(45, whRatio, 1, 1000);
-	glOrtho(-3, 3, -3, 3, -100, 100);
-	glMatrixMode(GL_MODELVIEW);
+	if(!bAnim)
+	{
+		glPushMatrix();
+		glViewport(0, 0, gWidth, gHeight);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		//whRatio = (GLfloat)gWidth / (GLfloat)gHeight;
+		//gluPerspective(45, whRatio, 1, 1000);
+		glOrtho(-3, 3, -3, 3, -100, 100);
+		glMatrixMode(GL_MODELVIEW);
 
-	gluLookAt(eye[0], eye[1], eye[2],
-		-1.0f, 0.0f, 0.0f,
-		0, 1, 0);
+		gluLookAt(eye[0], eye[1], eye[2],
+			-1.0f, 0.0f, 0.0f,
+			0, 1, 0);
 
-	DrawEditBar();
+		DrawEditBar();
 
-	glPopMatrix();
+		glPopMatrix();
+	}
 
 	glPushMatrix();
 	glViewport(0, 0, gWidth, gHeight);
@@ -415,6 +467,7 @@ int main(int argc, char* argv[])
 	glutIdleFunc(idle);
 	glutMouseFunc(mouse);
 	glutMotionFunc(onMouseMove);
+	createGLUTMenus();
 
 	glutMainLoop();
 	return 0;

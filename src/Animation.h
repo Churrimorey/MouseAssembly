@@ -4,6 +4,9 @@
 #include <memory>
 #include "clock.h"
 #include "robot.h"
+
+extern bool bAnim;
+
 /**
  * Animation - 统管动画
  */
@@ -32,7 +35,8 @@ public:
 	std::vector<MousePlate>& GetMousePlates() { return plates_; }
 
 private:
-	void UpdateMouseHead(double time);
+	void UpdateLeftHead(double time);
+	void UpdateRightHead(double time);
 
 	std::unique_ptr<Robot> left_robot_;
 	std::unique_ptr<Robot> right_robot_;
@@ -40,10 +44,12 @@ private:
 	std::vector<Battery> battries_;
 	Clock clock_;
 	State state_;
-	double timer_;
-	float left_base_rotate_;
-	float left_arm2_rotate_;
+	double timer_{1.0};
+	float left_base_rotate_{36.0f};
+	float left_arm1_rotate_{0.0f};
+	float left_arm2_rotate_{0.0f};
 	float right_base_rotate_;
+	float right_arm1_rotate_;
 	float right_arm2_rotate_;
 };
 

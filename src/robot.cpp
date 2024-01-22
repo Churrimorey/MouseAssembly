@@ -7,7 +7,7 @@ Mouse Robot::right_mouse_{ {0.0f, 0.0f, -1.2f}, HEAD };
 bool Robot::has_right_mouse_ = false;
 Battery Robot::left_battery_{ {0.0f, 0.0f, -1.0f} };
 bool Robot::has_left_battery_ = false;
-Battery Robot::right_battery_{ {0.0f, 0.0f, 1.0f} };
+Battery Robot::right_battery_{ {0.0f, 0.0f, -1.0f} };
 bool Robot::has_right_battery_ = false;
 Mouse Robot::mouse_{ {0.0f, 0.0f, -1.2f}, WHOLE };
 bool Robot::has_mouse_ = false;
@@ -394,7 +394,6 @@ bool Robot::UpdateRightPositionBatteryToWorkPlace(Robot& robot, const Vec3& dest
 	finger_position += delta;
 	UpdateRightPositionBatteryToWorkPlace(static_cast<RobotBase&>(robot), *arm1, *arm2, finger_position);
 	auto len = (arm2->GetLocalPosition() - destination).Length();
-	std::cout << len << std::endl;
 	if (len <= 1.55) {
 		right_battery_.SetPosition(destination);
 		has_right_battery_ = false;

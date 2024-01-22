@@ -51,9 +51,16 @@ public:
 
 	void DrawMouses() const;
 
+	void UpdateEmpty() { empty_ = mouse_.empty(); }
+
+	bool IsEmpty() { return empty_; }
+
 private:
 	std::vector<class Mouse> mouse_;
 	Vec3 position_;
+	static Vec3 mouseHeadPos[4];
+	static Vec3 mouseBasePos[4];
+	bool empty_ = true;
 };
 
 #endif
