@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <gl/glew.h>
 #include <gl/glut.h>
 #include <iostream>
 #include <memory>
