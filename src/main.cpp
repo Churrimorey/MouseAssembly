@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <gl/glew.h>
 #include <gl/glut.h>
 #include <iostream>
 #include <memory>
@@ -344,13 +345,15 @@ void redraw()
 	glEnable(GL_AUTO_NORMAL);
 	glEnable(GL_NORMALIZE);
 
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-	glEnable(GL_BLEND);
+	glHint(GL_POINT_SMOOTH_HINT, GL_DONT_CARE);
 
 	glFrontFace(GL_CW);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_POINT_SMOOTH);
 
 	glLoadIdentity();
 	glPushMatrix();

@@ -118,5 +118,5 @@ void texload(int i, char* filename)
 		0, //边框(0=无边框, 1=有边框) 
 		GL_RGB,	//bitmap数据的格式
 		GL_UNSIGNED_BYTE, //每个颜色数据的类型
-		bitmapData);	//bitmap数据指针  
+		bitmapData);	//bitmap数据指针
 }
