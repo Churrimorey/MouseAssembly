@@ -22,11 +22,15 @@ Mouse::Mouse(const Vec3& position, Type type) : position_(position), type_(type)
 void Mouse::DrawMouse(Type type)const
 {
 	if (type == HEAD) {
+		Material::SetMaterial(Material::MouseHead);
 		head.draw_obj();
 	}if (type == BASE) {
+		Material::SetMaterial(Material::MouseBase);
 		base.draw_obj();
 	}if (type == WHOLE) {
+		Material::SetMaterial(Material::MouseHead);
 		head.draw_obj();
+		Material::SetMaterial(Material::MouseBase);
 		base.draw_obj();
 	}
 }

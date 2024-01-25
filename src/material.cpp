@@ -59,6 +59,18 @@ void Material::InitMaterial() {
     set_4fv(material_specular_[MouseHead], 0xa0a0a0U);
     material_shininess_[MouseHead] = 0.8f;
 
+    // Battery
+    set_4fv(material_ambient_[Battery], 0x4040c0U);
+    set_4fv(material_diffuse_[Battery], 0x4040c0U);
+    set_4fv(material_specular_[Battery], 0x4040c0U);
+    material_shininess_[Battery] = 1.0f;
+
+    // UIGreen
+    set_4fv(material_ambient_[UIGreen], 0x00ff00U);
+    set_4fv(material_diffuse_[UIGreen], 0x00ff00U);
+    set_4fv(material_specular_[UIGreen], 0x00ff00U);
+    material_shininess_[UIGreen] = 1.0f;
+
     // Unknown
     set_4fv(material_ambient_[Unknown], 1.0f, 0.0f, 0.0f, 1.0f);
     set_4fv(material_diffuse_[Unknown], 1.0f, 0.0f, 0.0f, 1.0f);

@@ -147,8 +147,6 @@ void Light::InitLight(Menu& menu) {
         light->AddSubMenu(i_light_right);
 		light_menu->AddSubMenu(menu.AddItem(light));
 	}
-
-
 }
 
 void Light::FlushLight() {
@@ -175,6 +173,18 @@ void Light::FlushLight() {
 
 void Light::TurnOnLight(int light_id) {
     light_on_[light_id] = true;
+}
+
+void Light::FlushEditBarLight() {
+    GLfloat light_position[4] = { 0.0f, 5.0f, 5.0f, 0.0f };
+    GLfloat light_ambient[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat light_diffuse[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat light_specular[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glEnable(GL_LIGHT0);
 }
 
 void Light::MoveLightPosition(int light_id, float x, float y, float z, float w) {

@@ -27,6 +27,7 @@ public:
     static void DrawSkyBox();
     static void InitLight(Menu& menu);
     static void FlushLight();
+    static void FlushEditBarLight();
     static void TurnOnLight(int light_id);
     static void MoveLightPosition(int light_id, float x, float y, float z, float w);
     static void SetLightType(int light_id, enum LightType type);

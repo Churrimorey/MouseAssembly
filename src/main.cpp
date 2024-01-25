@@ -118,8 +118,6 @@ void printModelViewMatrix() {
 
 void DrawScene()
 {
-	Light::FlushLight();
-
 	DrawTable();
 
 	animation.GetLeftRobot()->DrawRobot();
@@ -146,7 +144,6 @@ void DrawScene()
 		animation.GetMousePlates()[0].FillMouseHeads();
 		bMouseHead = false;
 	}
-	Material::SetMaterial(Material::MouseHead);
 	animation.GetMousePlates()[0].DrawMouseHeads();
 
 	if (bMouseBase)
@@ -154,7 +151,6 @@ void DrawScene()
 		animation.GetMousePlates()[2].FillMouseBases();
 		bMouseBase = false;
 	}
-	Material::SetMaterial(Material::MouseBase);
 	animation.GetMousePlates()[2].DrawMouseBases();
 
 	animation.GetMousePlates()[1].DrawMouses();
@@ -165,32 +161,28 @@ void DrawScene()
 	//glTranslatef(2.0f, -3.0f, 5.5f);
 	//glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	//glScalef(0.60f, 0.60f, 0.60f);
-	//Material::SetMaterial(Material::MouseHead);
 	//head.DrawMouse(HEAD);
-	//Material::SetMaterial(Material::MouseBase);
 	//base.DrawMouse(BASE);
 	//glPopMatrix();
 }
 
 void DrawEditBar()
 {
-		glPushMatrix();
-		glTranslatef(-3.3f, 2.9f, 0.0f);
-		glScalef(0.2f, 0.2f, 0.2f);
-		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-		Material::SetMaterial(Material::MouseHead);	
-		head.DrawMouse(HEAD);
-		glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-3.3f, 2.9f, 0.0f);
+	glScalef(0.2f, 0.2f, 0.2f);
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+	head.DrawMouse(HEAD);
+	glPopMatrix();
 
-		glPushMatrix();
-		glTranslatef(-3.3f, 1.7f, 0.0f);
-		glScalef(0.2f, 0.2f, 0.2f);
-		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-		Material::SetMaterial(Material::MouseBase);
-		base.DrawMouse(BASE);
-		glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-3.3f, 1.7f, 0.0f);
+	glScalef(0.2f, 0.2f, 0.2f);
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+	base.DrawMouse(BASE);
+	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(-3.6f, -0.05f, 0.0f);
@@ -198,6 +190,7 @@ void DrawEditBar()
 	Battery::DrawBattery(0, 0, 0);
 	glPopMatrix();
 
+	Material::SetMaterial(Material::UIGreen);
 	glLineWidth(2.0f);
 	glBegin(GL_LINES);
 	glVertex3f(-3.2f, 2.0f, 0.0f);
@@ -372,10 +365,10 @@ void redraw()
 	//printf_s("eye = %f,%f,%f\n", eye[0], eye[1], eye[2]);
 	gluLookAt(r * cos(c * du) + step * sin(c * du), h + height, r * sin(c * du) - step * cos(c * du), step * sin(c * du), height, -step * cos(c * du), 0.0, 1.0, 0.0);   //从视点看远点
 	//gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0.0, 1.0, 0.0);
-
 	glMatrixMode(GL_MODELVIEW);
 	glTranslatef(0.0f, 0.0f, 0.0f);
 	glScalef(0.5, 0.5, 0.5);
+	Light::FlushLight();
 	Light::DrawSkyBox();
 	DrawScene();
 	if (bAnim)
@@ -397,24 +390,23 @@ void redraw()
 
 	if(!bAnim)
 	{
+		// Draw Edit Bar
+		Light::FlushEditBarLight();
 		glPushMatrix();
 		glViewport(0, 0, gWidth, gHeight);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		//whRatio = (GLfloat)gWidth / (GLfloat)gHeight;
-		//gluPerspective(45, whRatio, 1, 1000);
 		glOrtho(-3, 3, -3, 3, -100, 100);
 		glMatrixMode(GL_MODELVIEW);
-
 		gluLookAt(eye[0], eye[1], eye[2],
 			-1.0f, 0.0f, 0.0f,
 			0, 1, 0);
-
 		DrawEditBar();
-
 		glPopMatrix();
 	}
 
+	// Draw 2D UI
+	Material::SetMaterial(Material::UIGreen);
 	glPushMatrix();
 	glViewport(0, 0, gWidth, gHeight);
 	glMatrixMode(GL_PROJECTION);
@@ -426,19 +418,19 @@ void redraw()
 	getFPS();
 	glPopMatrix();
 
-	 //draw view center point
-	glPushMatrix();
-	glViewport(0, 0, gWidth, gHeight);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0, gWidth, 0, gHeight);
-	glMatrixMode(GL_MODELVIEW);
-	Material::SetMaterial(Material::Unknown);	
-	glPointSize(10.0f);
-	glBegin(GL_POINTS);
-	glVertex3f((gWidth - 80) / 2 + 80, gHeight / 2, 0.0f);
-	glEnd();
-	glPopMatrix();
+	//draw view center point
+	// glPushMatrix();
+	// glViewport(0, 0, gWidth, gHeight);
+	// glMatrixMode(GL_PROJECTION);
+	// glLoadIdentity();
+	// gluOrtho2D(0, gWidth, 0, gHeight);
+	// glMatrixMode(GL_MODELVIEW);
+	// Material::SetMaterial(Material::Unknown);	
+	// glPointSize(10.0f);
+	// glBegin(GL_POINTS);
+	// glVertex3f((gWidth - 80) / 2 + 80, gHeight / 2, 0.0f);
+	// glEnd();
+	// glPopMatrix();
 
 	glutSwapBuffers();
 }

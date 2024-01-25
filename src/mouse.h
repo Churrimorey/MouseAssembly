@@ -5,6 +5,7 @@
 #include <vector>
 #include "Vec3.h"
 #include "objloader.h"
+#include "material.h"
 enum  Type { HEAD = 1, BASE, WHOLE};
 
 class Mouse {
