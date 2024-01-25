@@ -17,6 +17,7 @@
 #include "menu.h"
 #include "getFPS.h"
 #include <math.h>
+#include "ScreenCapture.h"
 #pragma comment (lib,"glew32.lib")
 #define PI 3.1415926535
 #define STEP 1 // 视角平移的系数
@@ -277,6 +278,12 @@ void key(unsigned char k, int x, int y)
 	}
 	case 'a': {
 		step -= STEP;
+		break;
+	}
+	case 'f': // 按 'F' 字母键截图
+	{
+		ScreenCapture::captureScreenshot("screenshot.bmp");   //可换成希望保存到的路径和文件名
+		std::cout << "Screenshot saved to screenshot.bmp" << std::endl;
 		break;
 	}
 	default: break;
