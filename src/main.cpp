@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <gl/glew.h>
 #include <gl/glut.h>
 #include <iostream>
 #include <memory>
@@ -16,6 +17,7 @@
 #include "menu.h"
 #include "getFPS.h"
 #include <math.h>
+#pragma comment (lib,"glew32.lib")
 #define PI 3.1415926535
 #define STEP 1 // 视角平移的系数
 #define GLUT_KEY_SHIFT_L 97
@@ -76,12 +78,10 @@ void createGLUTMenus() {
 
 void init()
 {
-	#ifdef MACOS
 	GLint buf[1], sbuf[1];
 	glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
 	glGetIntegerv(GL_SAMPLES_ARB, sbuf);
 	glEnable(GL_MULTISAMPLE_ARB);
-	#endif
 
 	glGenTextures(9, texture);
 	texload(0, (char*)"table.bmp");
@@ -345,13 +345,15 @@ void redraw()
 	glEnable(GL_AUTO_NORMAL);
 	glEnable(GL_NORMALIZE);
 
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-	glEnable(GL_BLEND);
+	glHint(GL_POINT_SMOOTH_HINT, GL_DONT_CARE);
 
 	glFrontFace(GL_CW);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_POINT_SMOOTH);
 
 	glLoadIdentity();
 	glPushMatrix();
