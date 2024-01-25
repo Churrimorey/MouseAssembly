@@ -335,6 +335,7 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 	OriX = x, OriY = y;  //将此时的坐标作为旧值，为下一次计算增量做准备
 
 }
+
 void redraw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -354,13 +355,7 @@ void redraw()
 
 	glLoadIdentity();
 	glPushMatrix();
-	if (bAnim && !animation.GetMousePlates()[2].IsEmpty()) {
-		glViewport(0, 0, gWidth, gHeight);
-	}
-	else
-	{
-		glViewport(80, 0, gWidth - 80, gHeight);
-	}
+	glViewport(0, 0, gWidth, gHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	float whRatio = (GLfloat)(gWidth - 80) / (GLfloat)gHeight;
@@ -377,14 +372,8 @@ void redraw()
 	//gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0.0, 1.0, 0.0);
 
 	glMatrixMode(GL_MODELVIEW);
-	if (bAnim && !animation.GetMousePlates()[2].IsEmpty()) {
-		glTranslatef(0.0f, 0.0f, 0.0f);
-		glScalef(0.5, 0.5, 0.5);
-	}
-	else {
-		glTranslatef(0.8f, 0.0f, 0.0f);
-		glScalef(0.4, 0.4, 0.4);
-	}
+	glTranslatef(0.0f, 0.0f, 0.0f);
+	glScalef(0.5, 0.5, 0.5);
 	Light::DrawSkyBox();
 	DrawScene();
 	if (bAnim)
