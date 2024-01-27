@@ -44,11 +44,13 @@ static float OriX = -1, OriY = -1;
 float pitch = 0.0f;
 float yaw = -90.f;
 float fov = 45.0f;
-
 static float r = 10, h = 0.0;   //r是视点绕y轴的半径，h是视点高度即在y轴上的坐标
 static float c = PI / 180.0;    //弧度和角度转换参数
 bool ifCenterPoint = 0;
 bool ifAxiz = 1;
+bool keyState[256];
+float zoom_speed = 0.1f;
+float camera_speed = 5.0f;
 
 unsigned int texture[9];
 bool bMouseBase = false;
@@ -247,20 +249,45 @@ void idle()
 	glutPostRedisplay(); // 通知GLUT重绘屏幕
 	glutPostRedisplay();
 }
-void specialKeys(int key, int x, int y) {
-	switch (key) {
-	case GLUT_KEY_UP:
-	{
+
+void processInput() {
+	if (keyState['b']) {
+		cout << 1 << endl;
+	}
+	if (keyState['w']) {
+		cameraPos += cameraSpeed * cameraFront;
+	}
+	if (keyState['s']) {
+		cameraPos -= cameraSpeed * cameraFront;
+	}
+	// change perspective
+	if (keyState['d']) {
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	if (keyState['a']) {
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	if (keyState['q']) {
 		cameraPos += cameraSpeed * cameraUp;
-		break;
 	}
-	case GLUT_KEY_DOWN:
-	{
+	if (keyState['e']) {
 		cameraPos -= cameraSpeed * cameraUp;
-		break;
 	}
-	default:
-		break;
+	if (keyState['z']) {
+		if (fov >= 10.0f && fov <= 60.0f)
+			fov -= zoom_speed;
+		if (fov <= 10.0f)
+			fov = 10.0f;
+		if (fov >= 60.0f)
+			fov = 60.0f;
+	}
+	if (keyState['c']) {
+		if (fov >= 10.0f && fov <= 60.0f)
+			fov += zoom_speed;
+		if (fov <= 10.0f)
+			fov = 10.0f;
+		if (fov >= 60.0f)
+			fov = 60.0f;
 	}
 }
 
@@ -268,9 +295,7 @@ void key(unsigned char k, int x, int y)
 {
 	switch (k)
 	{
-	case 27:
-	case 'q': {exit(0); break; }
-
+	case 27: {exit(0); break; }
 	case '+':
 	{
 
@@ -283,19 +308,33 @@ void key(unsigned char k, int x, int y)
 	}
 	// change perspective
 	case 'w': {
-		cameraPos += cameraSpeed * cameraFront;
+		keyState['w'] = true;
+		//cameraPos += cameraSpeed * cameraFront;
 		break;
 	}
 	case 's': {
-		cameraPos -= cameraSpeed * cameraFront;
+		keyState['s'] = true;
+		//cameraPos -= cameraSpeed * cameraFront;
 		break;
 	}
 	case 'd': {
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		keyState['d'] = true;
+		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	}
 	case 'a': {
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		keyState['a'] = true;
+		//cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		break;
+	}
+	case 'q':
+	{
+		keyState['q'] = true;
+		break;
+	}
+	case 'e':
+	{
+		keyState['e'] = true;
 		break;
 	}
 	case 'n': {
@@ -307,25 +346,28 @@ void key(unsigned char k, int x, int y)
 		break;
 	}
 	case 'z': { //zoom in 放大
-		if (fov >= 10.0f && fov <= 60.0f)
-			fov -= 1.0f;
-		if (fov <= 10.0f)
-			fov = 10.0f;
-		if (fov >= 60.0f)
-			fov = 60.0f;
+		keyState['z'] = true;
+		//if (fov >= 10.0f && fov <= 60.0f)
+		//	fov -= 1.0f;
+		//if (fov <= 10.0f)
+		//	fov = 10.0f;
+		//if (fov >= 60.0f)
+		//	fov = 60.0f;
 		break;
 	}
 	case 'c': { //zoom out 缩小
-		if (fov >= 10.0f && fov <= 60.0f)
-			fov += 1.0f;
-		if (fov <= 10.0f)
-			fov = 10.0f;
-		if (fov >= 60.0f)
-			fov = 60.0f;
+		keyState['c'] = true;
+		//if (fov >= 10.0f && fov <= 60.0f)
+		//	fov += 1.0f;
+		//if (fov <= 10.0f)
+		//	fov = 10.0f;
+		//if (fov >= 60.0f)
+		//	fov = 60.0f;
 		break;
 	}
 	case 'b': { // 回到正常大小
 		fov = 45.0f;
+		break;
 	}
 	case 'f': // 按 'F' 字母键截图
 	{
@@ -336,6 +378,49 @@ void key(unsigned char k, int x, int y)
 	default: break;
 	}
 }
+
+void keyUp (unsigned char k, int x, int y) {
+	switch (k)
+	{
+		// change perspective
+	case 'w': {
+		keyState['w'] = false;
+		//cameraPos += cameraSpeed * cameraFront;
+		break;
+	}
+	case 's': {
+		keyState['s'] = false;
+		break;
+	}
+	case 'd': {
+		keyState['d'] = false;
+		break;
+	}
+	case 'a': {
+		keyState['a'] = false;
+		break;
+	}
+	case 'q':
+	{
+		keyState['q'] = false;
+		break;
+	}
+	case 'e':
+	{
+		keyState['e'] = false;
+		break;
+	}
+	case 'z': { //zoom in 放大
+		keyState['z'] = false;
+		break;
+	}
+	case 'c': { //zoom out 缩小
+		keyState['c'] = false;
+		break;
+	}
+	}
+}
+
 bool NoWalkTh = 0; // when the left button is not in down state, not walkthrough
 void mouse(int button, int state, int x, int y)
 {
@@ -385,6 +470,7 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 		pitch = 89.0f;
 	if (pitch < -89.0f)
 		pitch = -89.0f;
+	
 	glm::vec3 front;
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
@@ -395,9 +481,10 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 
 void redraw()
 {
+	processInput();
 	deltaTime = glfwGetTime() - lastFrame;
 	lastFrame = glfwGetTime();
-	cameraSpeed = 25.0f * deltaTime;
+	cameraSpeed = camera_speed * deltaTime;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -514,7 +601,7 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
-	glutSpecialFunc(specialKeys);
+	glutKeyboardUpFunc(keyUp);
 	glutIdleFunc(idle);
 	glutMouseFunc(mouse);
 	glutMotionFunc(onMouseMove);
