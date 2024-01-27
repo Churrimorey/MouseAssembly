@@ -300,9 +300,11 @@ void key(unsigned char k, int x, int y)
 	}
 	case 'n': {
 		ifCenterPoint = !ifCenterPoint;
+		break;
 	}
 	case 'm': {
 		ifAxiz = !ifAxiz;
+		break;
 	}
 	case 'z': { //zoom in 放大
 		if (fov >= 10.0f && fov <= 60.0f)
