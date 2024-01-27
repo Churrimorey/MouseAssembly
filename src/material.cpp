@@ -72,3 +72,12 @@ void Material::SetMaterial(MaterialType type) {
     glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular_[type]);
     glMaterialf(GL_FRONT, GL_SHININESS, material_shininess_[type]);
 }
+void Material::SetColor(float R,float G,float B) {
+    float temp_ambient_[4] = {R,G,B,1.0f};
+    float temp_diffuse_[4] = { R,G,B,1.0f };
+    float temp_specular_[4] = { R,G,B,1.0f };
+    glMaterialfv(GL_FRONT, GL_AMBIENT, temp_ambient_);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, temp_diffuse_);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, temp_specular_);
+    glMaterialf(GL_FRONT, GL_SHININESS,0.0f);
+}

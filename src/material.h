@@ -25,4 +25,5 @@ private:
 public:
     static void InitMaterial();
     static void SetMaterial(MaterialType type);
+    static void SetColor(float R, float G, float B);
 };

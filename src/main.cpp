@@ -15,25 +15,39 @@
 #include "clock.h"
 #include "menu.h"
 #include "getFPS.h"
+#include <GLFW/glfw3.h>
 #include <math.h>
+#include "vendor/imgui/imgui.h"
+#include "vendor/imgui/imgui_impl_glfw_gl3.h"
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
+#include "vendor/glm/gtc/type_ptr.hpp"
 #define PI 3.1415926535
-#define STEP 1 // 视角平移的系数
 #define GLUT_KEY_SHIFT_L 97
 #define GLUT_KEY_SHIFT_R 98
 #define PLAY 1
 int gHeight;
 int gWidth;
-
-float eye[] = { 0, 4, 8 }; // camera coordinates
-float center[] = { 0, 0, 0 }; //center coordinates
-static int du = 90; //du是视点和x轴的夹角
-static int dv = 0;
-static int OriX = -1, OriY = -1;  
-
-static float r = 10, h = 0.0;   //r是视点绕y轴的半径，h是视点高度即在y轴上的坐标
-static float c = PI / 180.0;    //弧度和角度转换参数
-double step = 0;
-double height = 0;
+glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 15.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+//float eye[] = { 0, 4, 8 }; // camera coordinates
+//float front[] = { 0,0,-1.0f }; //相机正面方向
+//float up[] = { 0,1,0 }; //相机上方向
+double deltaTime = 0;
+double lastFrame = 0;
+float cameraSpeed = 100.0f; //相机移动速度
+static float du = 90; //du是视点和x轴的夹角
+static float dv = 0;
+static float OriX = -1, OriY = -1; 
+float pitch = 0.0f;
+float yaw = -90.f;
+float fov = 45.0f;
+//static float r = 10, h = 0.0;   //r是视点绕y轴的半径，h是视点高度即在y轴上的坐标
+//static float c = PI / 180.0;    //弧度和角度转换参数
+//double step = 0;
+bool ifCenterPoint = 0;
+bool ifAxiz = 1;
 
 unsigned int texture[9];
 bool bMouseBase = false;
@@ -82,7 +96,7 @@ void init()
 	glGetIntegerv(GL_SAMPLES_ARB, sbuf);
 	glEnable(GL_MULTISAMPLE_ARB);
 	#endif
-
+	
 	glGenTextures(9, texture);
 	texload(0, (char*)"table.bmp");
 	texload(1, (char*)"battery.bmp");
@@ -240,12 +254,12 @@ void specialKeys(int key, int x, int y) {
 	switch (key) {
 	case GLUT_KEY_UP:
 	{
-		height += STEP;
+		cameraPos += cameraSpeed * cameraUp;
 		break;
 	}	
 	case GLUT_KEY_DOWN:
 	{
-		height -= STEP;
+		cameraPos -= cameraSpeed * cameraUp;
 		break;
 	}
 	default:
@@ -271,20 +285,47 @@ void key(unsigned char k, int x, int y)
 	}
 	// change perspective
 	case 'w': {
-		r -= STEP;
+		cameraPos += cameraSpeed * cameraFront;
 		break;
 	}
 	case 's': {
-		r += STEP;
+		cameraPos -= cameraSpeed * cameraFront;
 		break;
 	}
 	case 'd': {
-		step += STEP;
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	}
 	case 'a': {
-		step -= STEP;
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
+	}
+	case 'n': {
+		ifCenterPoint = !ifCenterPoint;
+	}
+	case 'm': {
+		ifAxiz = !ifAxiz;
+	}
+	case 'z': { //zoom in 放大
+			if (fov >= 10.0f && fov <= 60.0f)
+				fov -= 1.0f;
+			if (fov <= 10.0f)
+				fov = 10.0f;
+			if (fov >= 60.0f)
+				fov = 60.0f;
+			break;
+	}
+	case 'c': { //zoom out 缩小
+		if (fov >= 10.0f && fov <= 60.0f)
+			fov += 1.0f;
+		if (fov <= 10.0f)
+			fov = 10.0f;
+		if (fov >= 60.0f)
+			fov = 60.0f;
+		break;
+	}
+	case 'b': { // 回到正常大小
+		fov = 45.0f;
 	}
 	default: break;
 	}
@@ -327,16 +368,30 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 		OriX = x;
 		OriY = y;
 	}
-	du += x - OriX; //鼠标在窗口x轴方向上的增量加到视点与x轴的夹角上，就可以左右转
-	dv += y - OriY;  //鼠标在窗口y轴方向上的改变加到视点y的坐标上，就可以上下转
-	h += 0.03 * (y - OriY);  //鼠标在窗口y轴方向上的改变加到视点y的坐标上，就可以上下转
-	if (h > 1.0)   h = 1.0;  //对视点y坐标作一些限制，不会使视点太奇怪
-	else if (h < -1.0) h = -1.0;
+	du = x - OriX; //鼠标在窗口x轴方向上的增量加到视点与x轴的夹角上，就可以左右转
+	dv = y - OriY;  //鼠标在窗口y轴方向上的改变加到视点y的坐标上，就可以上下转
+	float  sensitivity = 0.1f;
+	du *= sensitivity;
+	dv *= sensitivity;
+	yaw += du;
+	pitch += dv;
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
 	OriX = x, OriY = y;  //将此时的坐标作为旧值，为下一次计算增量做准备
 
 }
 void redraw()
-{
+{;
+	deltaTime = glfwGetTime() - lastFrame;
+	lastFrame = glfwGetTime();
+	cameraSpeed = 25.0f * deltaTime;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -364,18 +419,12 @@ void redraw()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	float whRatio = (GLfloat)(gWidth - 80) / (GLfloat)gHeight;
-	gluPerspective(45, whRatio, 1, 1000);
+	gluPerspective(fov, whRatio, 1, 1000);
 	if (du > 360) du -= 360;
 	if (du < -360) du += 360;
 	if (dv > 360) dv -= 360;
 	if (dv < -360) dv += 360;
-	//eye[0] = r * cos(c * du) * cos(c * dv);
-	//eye[1] = r * sin(c * dv);
-	//eye[2] = r * cos(c * dv) * sin(c * du);
-	//printf_s("eye = %f,%f,%f\n", eye[0], eye[1], eye[2]);
-	gluLookAt(r * cos(c * du) + step * sin(c * du), h + height, r * sin(c * du) - step * cos(c * du), step * sin(c * du), height, -step * cos(c * du), 0.0, 1.0, 0.0);   //从视点看远点
-	//gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0.0, 1.0, 0.0);
-
+	gluLookAt(cameraPos[0], cameraPos[1], cameraPos[2], cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2], cameraUp[0], cameraUp[1], cameraUp[2]);
 	glMatrixMode(GL_MODELVIEW);
 	if (bAnim && !animation.GetMousePlates()[2].IsEmpty()) {
 		glTranslatef(0.0f, 0.0f, 0.0f);
@@ -415,7 +464,7 @@ void redraw()
 		glOrtho(-3, 3, -3, 3, -100, 100);
 		glMatrixMode(GL_MODELVIEW);
 
-		gluLookAt(eye[0], eye[1], eye[2],
+		gluLookAt(0, 4, 8,
 			-1.0f, 0.0f, 0.0f,
 			0, 1, 0);
 
@@ -436,25 +485,17 @@ void redraw()
 	glPopMatrix();
 
 	 //draw view center point
-	glPushMatrix();
-	glViewport(0, 0, gWidth, gHeight);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0, gWidth, 0, gHeight);
-	glMatrixMode(GL_MODELVIEW);
-	Material::SetMaterial(Material::Unknown);	
-	glPointSize(10.0f);
-	glBegin(GL_POINTS);
-	glVertex3f((gWidth - 80) / 2 + 80, gHeight / 2, 0.0f);
-	glEnd();
-	glPopMatrix();
+	renderCenterPoint(gWidth, gHeight,ifCenterPoint);
 
+	//画参考坐标
+	renderAxis(gWidth, gHeight,pitch,yaw, ifAxiz);
 	glutSwapBuffers();
 }
 
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
+	glfwInit();
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(800, 480);
 	int windowHandle = glutCreateWindow("Mouse Assembly Workshop");
