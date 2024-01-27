@@ -135,7 +135,7 @@ bool SaveBitmapFile(const char* filename, const unsigned char* data, int width, 
     bmpInfoHeader.biPlanes = 1;
     bmpInfoHeader.biBitCount = 24; // 24位位图
     bmpInfoHeader.biCompression = BI_RGB;
-    bmpInfoHeader.biSizeImage = imageSize;
+    bmpInfoHeader.biSizeImage = 0; // 0 for BI_RGB
     bmpInfoHeader.biXPelsPerMeter = 0; // 解析度
     bmpInfoHeader.biYPelsPerMeter = 0; // 解析度
     bmpInfoHeader.biClrUsed = 0;
@@ -165,13 +165,30 @@ bool SaveBitmapFile(const char* filename, const unsigned char* data, int width, 
     // 写入位图信息头
     fwrite(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
 
-    // 写入图像数据
-    for (int i = 0; i < height; ++i) {
-        // BMP文件格式要求数据是从底到顶的，所以我们从最后一行开始
-        fwrite(data + (width * (height - i - 1) * 3), 3, width, filePtr);
+    // 交换RGB颜色通道顺序来匹配BGR格式
+    unsigned char* bmpBuffer = new unsigned char[imageSize];
+    if (!bmpBuffer) {
+        std::cerr << "Error: Unable to allocate memory for the BMP buffer." << std::endl;
+        fclose(filePtr);
+        return false;
     }
 
-    // 关闭文件
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            int index = (i * width + j) * 3;
+            bmpBuffer[index + 0] = data[index + 2]; // R
+            bmpBuffer[index + 1] = data[index + 1]; // G
+            bmpBuffer[index + 2] = data[index + 0]; // B
+        }
+    }
+
+    // 写入图像数据
+    for (int i = 0; i < height; ++i) {
+        fwrite(bmpBuffer + (width * (height - i - 1) * 3), 3, width, filePtr);
+    }
+
+    // 释放内存和关闭文件
+    delete[] bmpBuffer;
     fclose(filePtr);
 
     return true;
