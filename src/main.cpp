@@ -228,11 +228,7 @@ void reshape(int width, int height)
 
 void idle()
 {
-	if (bAnim) // 如果需要播放动画
-	{
-		animation.Update(); // 更新动画的状态
-	}
-	glutPostRedisplay(); // 通知GLUT重绘屏幕
+	glutPostRedisplay(); 
 }
 void specialKeys(int key, int x, int y) {
 	switch (key) {
