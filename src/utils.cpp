@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <iostream>
 
 #ifdef MACOS
 unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader) {
@@ -118,5 +119,77 @@ void texload(int i, char* filename)
 		0, //边框(0=无边框, 1=有边框) 
 		GL_RGB,	//bitmap数据的格式
 		GL_UNSIGNED_BYTE, //每个颜色数据的类型
-		bitmapData);	//bitmap数据指针  
+		bitmapData);	//bitmap数据指针
+}
+
+bool SaveBitmapFile(const char* filename, const unsigned char* data, int width, int height) {
+    BITMAPFILEHEADER bmpFileHeader;
+    BITMAPINFOHEADER bmpInfoHeader;
+    FILE* filePtr;
+    int imageSize = width * height * 3; // 每个像素RGB三个字节
+
+    // 设置BITMAPINFOHEADER
+    bmpInfoHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmpInfoHeader.biWidth = width;
+    bmpInfoHeader.biHeight = height;
+    bmpInfoHeader.biPlanes = 1;
+    bmpInfoHeader.biBitCount = 24; // 24位位图
+    bmpInfoHeader.biCompression = BI_RGB;
+    bmpInfoHeader.biSizeImage = 0; // 0 for BI_RGB
+    bmpInfoHeader.biXPelsPerMeter = 0; // 解析度
+    bmpInfoHeader.biYPelsPerMeter = 0; // 解析度
+    bmpInfoHeader.biClrUsed = 0;
+    bmpInfoHeader.biClrImportant = 0;
+
+    // 设置BITMAPFILEHEADER
+    bmpFileHeader.bfType = BITMAP_ID;
+    bmpFileHeader.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + imageSize;
+    bmpFileHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+    bmpFileHeader.bfReserved1 = 0;
+    bmpFileHeader.bfReserved2 = 0;
+
+#ifdef MACOS
+    // 处理MACOS的文件打开
+    filePtr = fopen(filename, "wb");
+#else
+    fopen_s(&filePtr, filename, "wb");
+#endif
+    if (!filePtr) {
+        std::cerr << "Error: Unable to open file for writing." << std::endl;
+        return false;
+    }
+
+    // 写入位图文件头
+    fwrite(&bmpFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+
+    // 写入位图信息头
+    fwrite(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
+
+    // 交换RGB颜色通道顺序来匹配BGR格式
+    unsigned char* bmpBuffer = new unsigned char[imageSize];
+    if (!bmpBuffer) {
+        std::cerr << "Error: Unable to allocate memory for the BMP buffer." << std::endl;
+        fclose(filePtr);
+        return false;
+    }
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            int index = (i * width + j) * 3;
+            bmpBuffer[index + 0] = data[index + 2]; // R
+            bmpBuffer[index + 1] = data[index + 1]; // G
+            bmpBuffer[index + 2] = data[index + 0]; // B
+        }
+    }
+
+    // 写入图像数据
+    for (int i = 0; i < height; ++i) {
+        fwrite(bmpBuffer + (width * (height - i - 1) * 3), 3, width, filePtr);
+    }
+
+    // 释放内存和关闭文件
+    delete[] bmpBuffer;
+    fclose(filePtr);
+
+    return true;
 }

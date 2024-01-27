@@ -37,7 +37,7 @@ typedef struct {
 #else
 #include <Windows.h>
 #endif
-
+bool SaveBitmapFile(const char* filename, const unsigned char* data, int width, int height);
 unsigned char* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader);
 void texload(int i, char* filename);
 #endif
