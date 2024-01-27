@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <gl/glew.h>
 #include <gl/glut.h>
 #include <iostream>
 #include <memory>
@@ -22,7 +23,10 @@
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/glm/gtc/type_ptr.hpp"
+#include "ScreenCapture.h"
+#pragma comment (lib,"glew32.lib")
 #define PI 3.1415926535
+#define STEP 1 // 视角平移的系数
 #define GLUT_KEY_SHIFT_L 97
 #define GLUT_KEY_SHIFT_R 98
 #define PLAY 1
@@ -30,22 +34,19 @@ int gHeight;
 int gWidth;
 glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 15.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-//float eye[] = { 0, 4, 8 }; // camera coordinates
-//float front[] = { 0,0,-1.0f }; //相机正面方向
-//float up[] = { 0,1,0 }; //相机上方向
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);	
 double deltaTime = 0;
 double lastFrame = 0;
 float cameraSpeed = 100.0f; //相机移动速度
 static float du = 90; //du是视点和x轴的夹角
 static float dv = 0;
-static float OriX = -1, OriY = -1; 
+static float OriX = -1, OriY = -1;
 float pitch = 0.0f;
 float yaw = -90.f;
 float fov = 45.0f;
-//static float r = 10, h = 0.0;   //r是视点绕y轴的半径，h是视点高度即在y轴上的坐标
-//static float c = PI / 180.0;    //弧度和角度转换参数
-//double step = 0;
+
+static float r = 10, h = 0.0;   //r是视点绕y轴的半径，h是视点高度即在y轴上的坐标
+static float c = PI / 180.0;    //弧度和角度转换参数
 bool ifCenterPoint = 0;
 bool ifAxiz = 1;
 
@@ -62,7 +63,7 @@ Menu menu(2);
 Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
 Mouse base = Mouse(Vec3(0, 0, 0), BASE);
 
-GLUnurbsObj *theNurb;
+GLUnurbsObj* theNurb;
 
 void processMenuEvents(int option) {
 	switch (option) {
@@ -71,7 +72,7 @@ void processMenuEvents(int option) {
 		break;
 	default:
 		break;
-}
+	}
 
 	//glutPostRedisplay();
 }
@@ -90,13 +91,11 @@ void createGLUTMenus() {
 
 void init()
 {
-	#ifdef MACOS
 	GLint buf[1], sbuf[1];
 	glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
 	glGetIntegerv(GL_SAMPLES_ARB, sbuf);
 	glEnable(GL_MULTISAMPLE_ARB);
-	#endif
-	
+
 	glGenTextures(9, texture);
 	texload(0, (char*)"table.bmp");
 	texload(1, (char*)"battery.bmp");
@@ -132,8 +131,6 @@ void printModelViewMatrix() {
 
 void DrawScene()
 {
-	Light::FlushLight();
-
 	DrawTable();
 
 	animation.GetLeftRobot()->DrawRobot();
@@ -160,7 +157,6 @@ void DrawScene()
 		animation.GetMousePlates()[0].FillMouseHeads();
 		bMouseHead = false;
 	}
-	Material::SetMaterial(Material::MouseHead);
 	animation.GetMousePlates()[0].DrawMouseHeads();
 
 	if (bMouseBase)
@@ -168,7 +164,6 @@ void DrawScene()
 		animation.GetMousePlates()[2].FillMouseBases();
 		bMouseBase = false;
 	}
-	Material::SetMaterial(Material::MouseBase);
 	animation.GetMousePlates()[2].DrawMouseBases();
 
 	animation.GetMousePlates()[1].DrawMouses();
@@ -179,32 +174,28 @@ void DrawScene()
 	//glTranslatef(2.0f, -3.0f, 5.5f);
 	//glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
 	//glScalef(0.60f, 0.60f, 0.60f);
-	//Material::SetMaterial(Material::MouseHead);
 	//head.DrawMouse(HEAD);
-	//Material::SetMaterial(Material::MouseBase);
 	//base.DrawMouse(BASE);
 	//glPopMatrix();
 }
 
 void DrawEditBar()
 {
-		glPushMatrix();
-		glTranslatef(-3.3f, 2.9f, 0.0f);
-		glScalef(0.2f, 0.2f, 0.2f);
-		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-		Material::SetMaterial(Material::MouseHead);	
-		head.DrawMouse(HEAD);
-		glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-3.3f, 2.9f, 0.0f);
+	glScalef(0.2f, 0.2f, 0.2f);
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+	head.DrawMouse(HEAD);
+	glPopMatrix();
 
-		glPushMatrix();
-		glTranslatef(-3.3f, 1.7f, 0.0f);
-		glScalef(0.2f, 0.2f, 0.2f);
-		glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-		glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-		Material::SetMaterial(Material::MouseBase);
-		base.DrawMouse(BASE);
-		glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-3.3f, 1.7f, 0.0f);
+	glScalef(0.2f, 0.2f, 0.2f);
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+	base.DrawMouse(BASE);
+	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(-3.6f, -0.05f, 0.0f);
@@ -212,6 +203,7 @@ void DrawEditBar()
 	Battery::DrawBattery(0, 0, 0);
 	glPopMatrix();
 
+	Material::SetMaterial(Material::UIGreen);
 	glLineWidth(2.0f);
 	glBegin(GL_LINES);
 	glVertex3f(-3.2f, 2.0f, 0.0f);
@@ -248,6 +240,11 @@ void reshape(int width, int height)
 
 void idle()
 {
+	if (bAnim) // 如果需要播放动画
+	{
+		animation.Update(); // 更新动画的状态
+	}
+	glutPostRedisplay(); // 通知GLUT重绘屏幕
 	glutPostRedisplay();
 }
 void specialKeys(int key, int x, int y) {
@@ -256,7 +253,7 @@ void specialKeys(int key, int x, int y) {
 	{
 		cameraPos += cameraSpeed * cameraUp;
 		break;
-	}	
+	}
 	case GLUT_KEY_DOWN:
 	{
 		cameraPos -= cameraSpeed * cameraUp;
@@ -266,6 +263,7 @@ void specialKeys(int key, int x, int y) {
 		break;
 	}
 }
+
 void key(unsigned char k, int x, int y)
 {
 	switch (k)
@@ -307,13 +305,13 @@ void key(unsigned char k, int x, int y)
 		ifAxiz = !ifAxiz;
 	}
 	case 'z': { //zoom in 放大
-			if (fov >= 10.0f && fov <= 60.0f)
-				fov -= 1.0f;
-			if (fov <= 10.0f)
-				fov = 10.0f;
-			if (fov >= 60.0f)
-				fov = 60.0f;
-			break;
+		if (fov >= 10.0f && fov <= 60.0f)
+			fov -= 1.0f;
+		if (fov <= 10.0f)
+			fov = 10.0f;
+		if (fov >= 60.0f)
+			fov = 60.0f;
+		break;
 	}
 	case 'c': { //zoom out 缩小
 		if (fov >= 10.0f && fov <= 60.0f)
@@ -326,6 +324,12 @@ void key(unsigned char k, int x, int y)
 	}
 	case 'b': { // 回到正常大小
 		fov = 45.0f;
+	}
+	case 'f': // 按 'F' 字母键截图
+	{
+		ScreenCapture::captureScreenshot("screenshot.bmp");   //可换成希望保存到的路径和文件名
+		std::cout << "Screenshot saved to screenshot.bmp" << std::endl;
+		break;
 	}
 	default: break;
 	}
@@ -385,10 +389,10 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(front);
 	OriX = x, OriY = y;  //将此时的坐标作为旧值，为下一次计算增量做准备
-
 }
+
 void redraw()
-{;
+{
 	deltaTime = glfwGetTime() - lastFrame;
 	lastFrame = glfwGetTime();
 	cameraSpeed = 25.0f * deltaTime;
@@ -399,23 +403,19 @@ void redraw()
 	glEnable(GL_AUTO_NORMAL);
 	glEnable(GL_NORMALIZE);
 
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-	glEnable(GL_BLEND);
+	glHint(GL_POINT_SMOOTH_HINT, GL_DONT_CARE);
 
 	glFrontFace(GL_CW);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_POINT_SMOOTH);
 
 	glLoadIdentity();
 	glPushMatrix();
-	if (bAnim && !animation.GetMousePlates()[2].IsEmpty()) {
-		glViewport(0, 0, gWidth, gHeight);
-	}
-	else
-	{
-		glViewport(80, 0, gWidth - 80, gHeight);
-	}
+	glViewport(0, 0, gWidth, gHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	float whRatio = (GLfloat)(gWidth - 80) / (GLfloat)gHeight;
@@ -426,14 +426,9 @@ void redraw()
 	if (dv < -360) dv += 360;
 	gluLookAt(cameraPos[0], cameraPos[1], cameraPos[2], cameraPos[0] + cameraFront[0], cameraPos[1] + cameraFront[1], cameraPos[2] + cameraFront[2], cameraUp[0], cameraUp[1], cameraUp[2]);
 	glMatrixMode(GL_MODELVIEW);
-	if (bAnim && !animation.GetMousePlates()[2].IsEmpty()) {
-		glTranslatef(0.0f, 0.0f, 0.0f);
-		glScalef(0.5, 0.5, 0.5);
-	}
-	else {
-		glTranslatef(0.8f, 0.0f, 0.0f);
-		glScalef(0.4, 0.4, 0.4);
-	}
+	glTranslatef(0.0f, 0.0f, 0.0f);
+	glScalef(0.5, 0.5, 0.5);
+	Light::FlushLight();
 	Light::DrawSkyBox();
 	DrawScene();
 	if (bAnim)
@@ -453,26 +448,25 @@ void redraw()
 	animation.Update();
 	glPopMatrix();
 
-	if(!bAnim)
+	if (!bAnim)
 	{
+		// Draw Edit Bar
+		Light::FlushEditBarLight();
 		glPushMatrix();
 		glViewport(0, 0, gWidth, gHeight);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		//whRatio = (GLfloat)gWidth / (GLfloat)gHeight;
-		//gluPerspective(45, whRatio, 1, 1000);
 		glOrtho(-3, 3, -3, 3, -100, 100);
 		glMatrixMode(GL_MODELVIEW);
-
 		gluLookAt(0, 4, 8,
 			-1.0f, 0.0f, 0.0f,
 			0, 1, 0);
-
 		DrawEditBar();
-
 		glPopMatrix();
 	}
 
+	// Draw 2D UI
+	Material::SetMaterial(Material::UIGreen);
 	glPushMatrix();
 	glViewport(0, 0, gWidth, gHeight);
 	glMatrixMode(GL_PROJECTION);
@@ -484,11 +478,25 @@ void redraw()
 	getFPS();
 	glPopMatrix();
 
-	 //draw view center point
-	renderCenterPoint(gWidth, gHeight,ifCenterPoint);
+	//draw view center point
+	renderCenterPoint(gWidth, gHeight, ifCenterPoint);
 
 	//画参考坐标
-	renderAxis(gWidth, gHeight,pitch,yaw, ifAxiz);
+	renderAxis(gWidth, gHeight, pitch, yaw, ifAxiz);
+	//draw view center point
+	// glPushMatrix();
+	// glViewport(0, 0, gWidth, gHeight);
+	// glMatrixMode(GL_PROJECTION);
+	// glLoadIdentity();
+	// gluOrtho2D(0, gWidth, 0, gHeight);
+	// glMatrixMode(GL_MODELVIEW);
+	// Material::SetMaterial(Material::Unknown);	
+	// glPointSize(10.0f);
+	// glBegin(GL_POINTS);
+	// glVertex3f((gWidth - 80) / 2 + 80, gHeight / 2, 0.0f);
+	// glEnd();
+	// glPopMatrix();
+
 	glutSwapBuffers();
 }
 

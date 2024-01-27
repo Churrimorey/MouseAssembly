@@ -12,6 +12,8 @@ public:
         Box,
         Plate,
         Desk,
+        Battery,
+        UIGreen,
         Unknown,
         Count
     };
