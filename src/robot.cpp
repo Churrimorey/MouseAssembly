@@ -69,10 +69,14 @@ void RobotRightArm::Draw() const {
 	gluBeginSurface(theNurb);
 	gluNurbsSurface(theNurb, 10, s_knots, 16, t_knots, 8 * 3, 3, &rightCtrlpoints[0][0][0], 5, 8, GL_MAP2_VERTEX_3);
 	gluEndSurface(theNurb);
-	glColor3f(1.0, 1.0, 0.0);
-	glPointSize(5.0);
-
 	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+	glScalef(0.6f, 0.6f, 0.6f);
+	DrawCircle(0.0f, -0.3f, 7.0f, 1.0f, 10);
+	glPopMatrix();
+
 	if (GetNext() != nullptr) {
 		GetNext()->Draw();
 	}
@@ -101,10 +105,14 @@ void RobotLeftArm::Draw() const {
 	gluBeginSurface(theNurb);
 	gluNurbsSurface(theNurb, 10, s_knots, 16, t_knots, 8 * 3, 3, &leftCtrlpoints[0][0][0], 5, 8, GL_MAP2_VERTEX_3);
 	gluEndSurface(theNurb);
-	glColor3f(1.0, 1.0, 0.0);
-	glPointSize(5.0);
-
 	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+	glScalef(0.6f, 0.6f, 0.6f);
+	DrawCircle(0.0f, 0.3f, 7.0f, 1.3f, 10);
+	glPopMatrix();
+
 	if (GetNext() != nullptr) {
 		GetNext()->Draw();
 	}
