@@ -53,8 +53,8 @@ void renderAxis(int Width, int Height,float pitch,float yaw, bool ifAxiz) {
     /*glTranslatef(-30,0,-30);*/
     glTranslatef(-Width / 4, 0, 0);
     glTranslatef((Width - 80) / 2 + 80, Height / 2, 1.0f);    // 调整绘图坐标
-    glRotatef(yaw + 90, 0, 1, 0);
     glRotatef(pitch, 1, 0, 0);
+    glRotatef(yaw + 90, 0, 1, 0);
     // 坐标轴
     float axis_length = 100;
     glLineWidth(5);
