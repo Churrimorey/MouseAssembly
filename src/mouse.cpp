@@ -38,8 +38,15 @@ void Mouse::DrawMouse(Type type)const
 void MousePlate::DrawMousePlates() const {
 	glPushMatrix();
 	glTranslatef(position_.GetX(), position_.GetY(), position_.GetZ());
-	glScalef(6.0f, 0.1, 3.0f);
-	glutSolidCube(1);
+	for (int i=0; i < 12; i++) {
+		for (int j=0; j < 6; j++) {
+			glPushMatrix();
+			glTranslatef(i*0.5f-3, 0.0f, j*0.5f-1.5);
+			glScalef(1.0f, 0.2f, 1.0f);
+			glutSolidCube(0.5);
+			glPopMatrix();
+		}	
+	}
 	glPopMatrix();
 }
 

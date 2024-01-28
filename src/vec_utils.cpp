@@ -19,5 +19,6 @@ GLfloat* set_fv::coeff_4fv(GLfloat* arr, GLfloat coeff) {
     for (int i = 0; i < 3; i++) {
         ret[i] = arr[i] * coeff;
     }
+    ret[3] = 1.0;
     return ret;
 }

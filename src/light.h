@@ -1,6 +1,7 @@
 #pragma once
 #include <gl/glut.h>
 #include "menu.h"
+#include "material.h"
 
 class Light {
 public:

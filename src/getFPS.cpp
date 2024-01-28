@@ -57,7 +57,6 @@ void renderAxis(int Width, int Height,float pitch,float yaw, bool ifAxiz) {
     glRotatef(pitch, 1, 0, 0);
     // ×ø±êÖá
     float axis_length = 100;
-    Material::SetMaterial(Material::Unknown);
     glLineWidth(5);
     glBegin(GL_LINE_STRIP);
     Material::SetColor(1, 0, 0);
@@ -72,7 +71,6 @@ void renderAxis(int Width, int Height,float pitch,float yaw, bool ifAxiz) {
     glutSolidCone(5.0, 10.0, 50, 50);
     glPopMatrix();
 
-    Material::SetMaterial(Material::Unknown);
     glBegin(GL_LINE_STRIP);
     Material::SetColor(0, 1, 0);
     glVertex3f(0, 0, 0);
@@ -84,7 +82,6 @@ void renderAxis(int Width, int Height,float pitch,float yaw, bool ifAxiz) {
     glutSolidCone(5.0, 10.0, 50, 50); // »æÖÆÔ²×¶
     glPopMatrix();
 
-    Material::SetMaterial(Material::Unknown);
     glBegin(GL_LINE_STRIP);
     Material::SetColor(0, 0, 1);
     glVertex3f(0, 0, 0);
@@ -97,7 +94,6 @@ void renderAxis(int Width, int Height,float pitch,float yaw, bool ifAxiz) {
     glPopMatrix();
 
     glPushMatrix();
-    Material::SetMaterial(Material::Unknown);
     Material::SetColor(1, 1, 1);
     glutSolidSphere(5.0f, 100,100);
     glPopMatrix();

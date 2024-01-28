@@ -134,7 +134,7 @@ bool SaveBitmapFile(const char* filename, const unsigned char* data, int width, 
     bmpInfoHeader.biHeight = height;
     bmpInfoHeader.biPlanes = 1;
     bmpInfoHeader.biBitCount = 24; // 24位位图
-    bmpInfoHeader.biCompression = BI_RGB;
+    bmpInfoHeader.biCompression = 0;
     bmpInfoHeader.biSizeImage = 0; // 0 for BI_RGB
     bmpInfoHeader.biXPelsPerMeter = 0; // 解析度
     bmpInfoHeader.biYPelsPerMeter = 0; // 解析度

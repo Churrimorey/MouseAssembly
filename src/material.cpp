@@ -37,9 +37,9 @@ void Material::InitMaterial() {
 
     // Plate
     set_4fv(material_ambient_[Plate], 0x80b4eaU);
-    set_4fv(material_diffuse_[Plate], 0x000000U);
-    set_4fv(material_specular_[Plate], 0x000000U);
-    material_shininess_[Plate] = 0.0f;
+    set_4fv(material_diffuse_[Plate], 0x80b4eaU);
+    set_4fv(material_specular_[Plate], 0x80b4eaU);
+    material_shininess_[Plate] = 0.3f;
 
     // Desk
     set_4fv(material_ambient_[Desk], 0x101010U);
@@ -49,8 +49,8 @@ void Material::InitMaterial() {
 
     // MouseBase
     set_4fv(material_ambient_[MouseBase], 0x50d050U);
-    set_4fv(material_diffuse_[MouseBase], 0x503050U);
-    set_4fv(material_specular_[MouseBase], 0x002000U);
+    set_4fv(material_diffuse_[MouseBase], 0x50d050U);
+    set_4fv(material_specular_[MouseBase], 0x202020U);
     material_shininess_[MouseBase] = 1.0f;
 
     // MouseHead
@@ -65,11 +65,11 @@ void Material::InitMaterial() {
     set_4fv(material_specular_[Battery], 0x4040c0U);
     material_shininess_[Battery] = 1.0f;
 
-    // UIGreen
-    set_4fv(material_ambient_[UIGreen], 0x00ff00U);
-    set_4fv(material_diffuse_[UIGreen], 0x00ff00U);
-    set_4fv(material_specular_[UIGreen], 0x00ff00U);
-    material_shininess_[UIGreen] = 1.0f;
+    // Light
+    set_4fv(material_ambient_[Light], 0x000000U);
+    set_4fv(material_diffuse_[Light], 0xffffe0U);
+    set_4fv(material_specular_[Light], 0x000000U);
+    material_shininess_[Light] = 1.0f;
 
     // Unknown
     set_4fv(material_ambient_[Unknown], 1.0f, 0.0f, 0.0f, 1.0f);
@@ -79,15 +79,24 @@ void Material::InitMaterial() {
 }
 
 void Material::SetMaterial(MaterialType type) {
+    GLfloat zero[4] = { 0.0f };
     glMaterialfv(GL_FRONT, GL_AMBIENT, material_ambient_[type]);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse_[type]);
     glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular_[type]);
+    if (type == MaterialType::Light)
+        glMaterialfv(GL_FRONT, GL_EMISSION, material_diffuse_[type]);
+    else
+        glMaterialfv(GL_FRONT, GL_EMISSION, zero);
+
     glMaterialf(GL_FRONT, GL_SHININESS, material_shininess_[type]);
 }
 void Material::SetColor(float R, float G, float B) {
     float temp_ambient_[4] = { R,G,B,1.0f };
     float temp_diffuse_[4] = { R,G,B,1.0f };
     float temp_specular_[4] = { R,G,B,1.0f };
+    GLfloat zero[4] = { 0.0f };
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, zero);
     glMaterialfv(GL_FRONT, GL_AMBIENT, temp_ambient_);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, temp_diffuse_);
     glMaterialfv(GL_FRONT, GL_SPECULAR, temp_specular_);

@@ -13,7 +13,7 @@ public:
         Plate,
         Desk,
         Battery,
-        UIGreen,
+        Light,
         Unknown,
         Count
     };

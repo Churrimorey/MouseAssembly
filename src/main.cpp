@@ -205,8 +205,9 @@ void DrawEditBar()
 	Battery::DrawBattery(0, 0, 0);
 	glPopMatrix();
 
-	Material::SetMaterial(Material::UIGreen);
+	Material::SetColor(0.0f, 1.0f, 0.0f);
 	glLineWidth(2.0f);
+	glPushMatrix();
 	glBegin(GL_LINES);
 	glVertex3f(-3.2f, 2.0f, 0.0f);
 	glVertex3f(-4.0f, 2.0f, 0.1f);
@@ -217,6 +218,7 @@ void DrawEditBar()
 	glVertex3f(-3.2f, -0.3f, 0.0f);
 	glVertex3f(-4.0f, -0.3f, 0.1f);
 	glEnd();
+	glPopMatrix();
 }
 
 void reshape(int width, int height)
@@ -537,10 +539,18 @@ void redraw()
 	animation.Update();
 	glPopMatrix();
 
+	Light::FlushEditBarLight();
+
 	if (!bAnim)
 	{
 		// Draw Edit Bar
-		Light::FlushEditBarLight();
+		
+		// 以下代码可以排除一个十分奇怪的 bug，请勿删除
+		
+		glPushMatrix();
+		glutSolidCube(1000);
+		glPopMatrix();
+
 		glPushMatrix();
 		glViewport(0, 0, gWidth, gHeight);
 		glMatrixMode(GL_PROJECTION);
@@ -554,8 +564,14 @@ void redraw()
 		glPopMatrix();
 	}
 
+	//draw view center point
+	renderCenterPoint(gWidth, gHeight, ifCenterPoint);
+
+	//画参考坐标
+	renderAxis(gWidth, gHeight, -pitch, yaw, ifAxiz);
+
 	// Draw 2D UI
-	Material::SetMaterial(Material::UIGreen);
+	Material::SetColor(0.0f, 1.0f, 0.0f);
 	glPushMatrix();
 	glViewport(0, 0, gWidth, gHeight);
 	glMatrixMode(GL_PROJECTION);
@@ -566,25 +582,6 @@ void redraw()
 	menu.Draw(0, 0);
 	getFPS();
 	glPopMatrix();
-
-	//draw view center point
-	renderCenterPoint(gWidth, gHeight, ifCenterPoint);
-
-	//画参考坐标
-	renderAxis(gWidth, gHeight, pitch, yaw, ifAxiz);
-	//draw view center point
-	// glPushMatrix();
-	// glViewport(0, 0, gWidth, gHeight);
-	// glMatrixMode(GL_PROJECTION);
-	// glLoadIdentity();
-	// gluOrtho2D(0, gWidth, 0, gHeight);
-	// glMatrixMode(GL_MODELVIEW);
-	// Material::SetMaterial(Material::Unknown);	
-	// glPointSize(10.0f);
-	// glBegin(GL_POINTS);
-	// glVertex3f((gWidth - 80) / 2 + 80, gHeight / 2, 0.0f);
-	// glEnd();
-	// glPopMatrix();
 
 	glutSwapBuffers();
 }

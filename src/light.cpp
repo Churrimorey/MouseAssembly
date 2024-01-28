@@ -16,6 +16,8 @@ void Light::DrawSkyBox() {
     glPushMatrix();
     glRotatef(22.0f, 0.0f, 1.0f, 0.0f);
     glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    Material::SetColor(1.0f, 1.0f, 1.0f);
     glBindTexture(GL_TEXTURE_2D, texture[3]); // nx
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f, -100.0f, 100.0f);
@@ -86,13 +88,13 @@ void Light::InitLight(Menu& menu) {
     // 设置不同类型灯光的效果
     // DirectionalLight
     set_4fv(light_ambient_[DirectionalLight], 0xa0a0a0U);
-    set_4fv(light_diffuse_[DirectionalLight], 0x202020);
+    set_4fv(light_diffuse_[DirectionalLight], 0x303030);
     set_4fv(light_specular_[DirectionalLight], 0x303030U);
 
     // PointLight
-    set_4fv(light_ambient_[PointLight], 0x101010U);
-    set_4fv(light_diffuse_[PointLight], 0x080808U);
-    set_4fv(light_specular_[PointLight], 0x080808U);
+    set_4fv(light_ambient_[PointLight], 0x050505U);
+    set_4fv(light_diffuse_[PointLight], 0xc0c0c0U);
+    set_4fv(light_specular_[PointLight], 0x303030U);
 
     SubMenu* light_menu = new SubMenu("Light");
     menu.AddRootItem(light_menu);
@@ -155,6 +157,7 @@ void Light::FlushLight() {
             if (light_type_[light_id] == LightType::PointLight) {
                 glPushMatrix();
                 glTranslatef(light_position_[light_id][0], light_position_[light_id][1], light_position_[light_id][2]);
+                Material::SetMaterial(Material::Light);
                 glutSolidCube(0.5);
                 glPopMatrix();
             }
@@ -176,15 +179,18 @@ void Light::TurnOnLight(int light_id) {
 }
 
 void Light::FlushEditBarLight() {
-    GLfloat light_position[4] = { 0.0f, 5.0f, 5.0f, 0.0f };
-    GLfloat light_ambient[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    GLfloat light_diffuse[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    GLfloat light_specular[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    const GLfloat light_position[4] = { 0.0f, 5.0f, 5.0f, 0.0f };
+    const GLfloat light_ambient[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    const GLfloat light_diffuse[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    const GLfloat light_specular[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
     glEnable(GL_LIGHT0);
+    for (unsigned i = 1; i < light_num_max; i++) {
+        glDisable(GL_LIGHT0 + i);
+    }
 }
 
 void Light::MoveLightPosition(int light_id, float x, float y, float z, float w) {

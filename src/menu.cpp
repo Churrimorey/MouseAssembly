@@ -218,6 +218,7 @@ void ARabout::Draw() {
     if (DrawAbout) {
         glEnable(GL_TEXTURE_2D);
 	    glBindTexture(GL_TEXTURE_2D, texture[2]);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
         glBegin(GL_QUADS);
         int height = large_target ? 360 : 240;

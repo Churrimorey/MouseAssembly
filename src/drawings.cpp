@@ -5,35 +5,57 @@ void Texture_desk()
 {	
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	Material::SetColor(1.0f, 1.0f, 1.0f);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glPushMatrix();
-
+	// glutSolidCube(2.0);
 	glBegin(GL_QUADS);
+	glNormal3f(0, 0, 1);
 	glTexCoord2i(1, 1); glVertex3i(-1, 1, 1);
 	glTexCoord2i(1, 0); glVertex3i(-1, -1, 1);
 	glTexCoord2i(0, 0); glVertex3i(1, -1, 1);
 	glTexCoord2i(0, 1); glVertex3i(1, 1, 1);
 
+	glNormal3f(0, 0, -1);
 	glTexCoord2i(1, 1); glVertex3i(-1, 1, -1);
 	glTexCoord2i(1, 0); glVertex3i(-1, -1, -1);
 	glTexCoord2i(0, 0); glVertex3i(1, -1, -1);
 	glTexCoord2i(0, 1); glVertex3i(1, 1, -1);
 
+	glNormal3f(1, 0, 0);
 	glTexCoord2i(1, 1); glVertex3i(1, -1, 1);
 	glTexCoord2i(1, 0); glVertex3i(1, -1, -1);
 	glTexCoord2i(0, 0); glVertex3i(1, 1, -1);
 	glTexCoord2i(0, 1); glVertex3i(1, 1, 1);
 
+	glNormal3f(-1, 0, 0);
 	glTexCoord2i(1, 1); glVertex3i(-1, -1, 1);
 	glTexCoord2i(1, 0); glVertex3i(-1, -1, -1);
 	glTexCoord2i(0, 0); glVertex3i(-1, 1, -1);
 	glTexCoord2i(0, 1); glVertex3i(-1, 1, 1);
 
-	glTexCoord2i(1, 1); glVertex3i(-1, 1, 1);
-	glTexCoord2i(1, 0); glVertex3i(-1, 1, -1);
-	glTexCoord2i(0, 0); glVertex3i(1, 1, -1);
-	glTexCoord2i(0, 1); glVertex3i(1, 1, 1);
+	glNormal3f(0, 1, 0);
+	for (int i=0; i < 64; i++) {
+		for (int j=0; j < 64; j++) {
+			glTexCoord2f(i / 64.0f, j / 64.0f);
+			glVertex3f(-1 + 2 * i / 64.0f, 1, -1 + 2 * j / 64.0f);
+			glTexCoord2f((i + 1) / 64.0f, j / 64.0f);
+			glVertex3f(-1 + 2 * (i + 1) / 64.0f, 1, -1 + 2 * j / 64.0f);
+			glTexCoord2f((i + 1) / 64.0f, (j + 1) / 64.0f);
+			glVertex3f(-1 + 2 * (i + 1) / 64.0f, 1, -1 + 2 * (j + 1) / 64.0f);
+			glTexCoord2f(i / 64.0f, (j + 1) / 64.0f);
+			glVertex3f(-1 + 2 * i / 64.0f, 1, -1 + 2 * (j + 1) / 64.0f);
+		}
+	}
+	// glDisable(GL_TEXTURE_2D);
+	// glVertex3i(-1, 1, 1);
+	// glVertex3i(-1, 1, -1);
+	// glVertex3i(1, 1, -1);
+	// glVertex3i(1, 1, 1);
+	// glEnable(GL_TEXTURE_2D);
 
+	glNormal3f(0, -1, 0);
 	glTexCoord2i(1, 1); glVertex3i(-1, -1, 1);
 	glTexCoord2i(1, 0); glVertex3i(-1, -1, -1);
 	glTexCoord2i(0, 0); glVertex3i(1, -1, -1);
@@ -283,9 +305,7 @@ const float Battery::positions[][3] = { {-1.2f, 0.0f, -1.2f}, {-0.6f, 0.0f, -1.2
 	{0.6f, 0.0f, 1.2f}, {1.2f, 0.0f, 1.2f} };
 
 void Battery::Draw() const {
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	Material::SetMaterial(Material::Battery);
 	glPushMatrix();
 	glTranslatef(position_.GetX(), position_.GetY(), position_.GetZ());
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
@@ -293,7 +313,6 @@ void Battery::Draw() const {
 	gluCylinder(cylinder, 0.3, 0.3, 1.0, 10, 10);
 	DrawCircle(0.0f, 0.0f, 1.0f, 0.3f, 10);
 	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
 }
 
 void Battery::DrawBatterys(std::vector<Battery>& batteries) {
