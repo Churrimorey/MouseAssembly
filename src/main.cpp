@@ -18,11 +18,11 @@
 #include "getFPS.h"
 #include <GLFW/glfw3.h>
 #include <math.h>
-#include "vendor/imgui/imgui.h"
-#include "vendor/imgui/imgui_impl_glfw_gl3.h"
-#include "vendor/glm/glm.hpp"
-#include "vendor/glm/gtc/matrix_transform.hpp"
-#include "vendor/glm/gtc/type_ptr.hpp"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw_gl3.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "ScreenCapture.h"
 #pragma comment (lib,"glew32.lib")
 #define PI 3.1415926535
@@ -75,8 +75,6 @@ void processMenuEvents(int option) {
 	default:
 		break;
 	}
-
-	//glutPostRedisplay();
 }
 
 
@@ -244,11 +242,6 @@ void reshape(int width, int height)
 
 void idle()
 {
-	if (bAnim) // 如果需要播放动画
-	{
-		animation.Update(); // 更新动画的状态
-	}
-	glutPostRedisplay(); // 通知GLUT重绘屏幕
 	glutPostRedisplay();
 }
 
