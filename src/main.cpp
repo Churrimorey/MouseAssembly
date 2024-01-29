@@ -426,17 +426,21 @@ void mouse(int button, int state, int x, int y)
 		if (menu.Hit(x, gHeight - y))
 			return;
 		printf("%d %d\n", x, y);
-		if (x <= 110)
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		//printf("viewport: %d %d\n", viewport[2], viewport[3]);
+		if (x * 1.0 / viewport[2] <= 110 * 1.0 / 800)
 		{
-			if (y >= 0 && y <= 86)
+			double temp_y = y * 1.0 / viewport[3];
+			if (temp_y >= 0 && temp_y <= 86 * 1.0 / 480)
 			{
 				bMouseHead = true;
 			}
-			else if (y <= 175)
+			else if (temp_y <= 175 * 1.0 / 480)
 			{
 				bMouseBase = true;
 			}
-			else if (y <= 252)
+			else if (temp_y <= 252 * 1.0 / 480)
 			{
 				bBattery = true;
 			}
