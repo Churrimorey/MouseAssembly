@@ -1,8 +1,8 @@
 #include "mouse.h"
 
 //const float g_lightPos[] = { 1.0f, 1.0f, 1.0f, 0.0f };
-Vec3 MousePlate::mouseHeadPos[4] = { Vec3{ 2.5f, -3.0f, -2.5f }, Vec3{ 4.0f, -3.0f, -2.5f }, Vec3{ 5.5f, -3.0f, -2.5f }, Vec3{ 7.0f, -3.0f, -2.5f } };
-Vec3 MousePlate::mouseBasePos[4] = { Vec3{ -3.0f, -3.0f, 4.0f }, Vec3{ -4.5f, -3.0f, 4.0f }, Vec3{ -6.0f, -3.0f, 4.0f }, Vec3{ -7.5f, -3.0f, 4.0f } };
+Vec3 MousePlate::mouseHeadPos[4] = { Vec3{ 2.0f, -3.0f, -3.5f }, Vec3{ 3.5f, -3.0f, -3.5f }, Vec3{ 5.0f, -3.0f, -3.5f }, Vec3{ 6.5f, -3.0f, -3.5f } };
+Vec3 MousePlate::mouseBasePos[4] = { Vec3{ -3.5f, -3.0f, 3.0f }, Vec3{ -5.0f, -3.0f, 3.0f }, Vec3{ -6.5f, -3.0f, 3.0f }, Vec3{ -8.0f, -3.0f, 3.0f } };
 
 Mouse::Mouse(const Vec3& position, Type type) : position_(position), type_(type) {
 	if (type == HEAD) {

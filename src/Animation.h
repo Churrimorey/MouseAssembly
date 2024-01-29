@@ -34,6 +34,8 @@ public:
 
 	std::vector<MousePlate>& GetMousePlates() { return plates_; }
 
+	State& GetState() { return state_; }
+
 private:
 	void UpdateLeftHead(double time);
 	void UpdateRightHead(double time);

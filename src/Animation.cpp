@@ -5,7 +5,7 @@ void Animation::Update() {
 	auto time = clock_.GetElapsedTime();
 	switch (state_) {
 	case State::LEFTGETTOMOUSEHEAD: {
-		if (!plates_[2].GetMouses().empty()) {
+		if (!plates_[2].GetMouses().empty() && plates_[1].GetMouses().size() < 4) {
 			UpdateLeftHead(std::min(timer_, time));
 			timer_ -= time;
 			if (timer_ <= 0) {
@@ -155,12 +155,12 @@ void Animation::Update() {
 		Robot::right_battery_.Draw();
 		glPopMatrix();
 		UpdateRightHead(std::min(timer_, time));
-		timer_ -= time;
+		timer_ -= time; 
 		if (timer_ <= 0) {
 			state_ = State::ASSEMBLE;
+			timer_ = 1.0;
 			Robot::has_right_mouse_ = false;
 			Robot::has_mouse_ = true;
-			timer_ = 1.0;
 			right_base_rotate_ = static_cast<RobotBase*>(right_robot_.get())->GetRotate() - 45;
 			right_arm1_rotate_ = static_cast<RobotArm*>(right_robot_->GetNext())->GetRotate() - 30.0;
 			right_arm2_rotate_ = static_cast<RobotArm*>(right_robot_->GetNext()->GetNext())->GetRotate() - 123.0;
@@ -200,8 +200,11 @@ void Animation::Update() {
 			mouse.SetPosition(mouse.GetPosition() + Vec3(1.5 * time, 0.0f, 0.0f));
 		}
 
-		for (auto& mouse : plates_[1].GetMouses()) {
+		if(plates_[1].GetMouses().size() < 4)
+		{
+			for (auto& mouse : plates_[1].GetMouses()) {
 			mouse.SetPosition(mouse.GetPosition() + Vec3(1.5 * time, 0.0f, 0.0f));
+			}
 		}
 		if (timer_ <= 0) {
 			state_ = State::LEFTGETTOMOUSEHEAD;

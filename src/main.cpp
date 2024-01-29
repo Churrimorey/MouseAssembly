@@ -425,13 +425,11 @@ void mouse(int button, int state, int x, int y)
 			return;
 		if (menu.Hit(x, gHeight - y))
 			return;
-		printf("%d %d\n", x, y);
-		GLint viewport[4];
-		glGetIntegerv(GL_VIEWPORT, viewport);
-		//printf("viewport: %d %d\n", viewport[2], viewport[3]);
-		if (x * 1.0 / viewport[2] <= 110 * 1.0 / 800)
+		//printf("%d %d\n", x, y);
+		//printf("viewport: %d %d\n", gWidth, gHeight);
+		if (x * 1.0 / gWidth <= 110 * 1.0 / 800)
 		{
-			double temp_y = y * 1.0 / viewport[3];
+			double temp_y = y * 1.0 / gHeight;
 			if (temp_y >= 0 && temp_y <= 86 * 1.0 / 480)
 			{
 				bMouseHead = true;
