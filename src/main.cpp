@@ -14,30 +14,33 @@
 #include "light.h"
 #include "material.h"
 #include "clock.h"
+#include "clock.h"
 #include "menu.h"
-#include "getFPS.h"
+#include "GUI.h"
 #include <GLFW/glfw3.h>
 #include <math.h>
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw_gl3.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
+#include "vendor/glm/gtc/type_ptr.hpp"
 #include "ScreenCapture.h"
+//着色器
+#include "ImportedModel.h"
+
 #pragma comment (lib,"glew32.lib")
 #define PI 3.1415926535
 #define STEP 1 // 视角平移的系数
 #define GLUT_KEY_SHIFT_L 97
 #define GLUT_KEY_SHIFT_R 98
 #define PLAY 1
-int gHeight;
-int gWidth;
-glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 15.0f);
+int gHeight = 480;
+int gWidth = 800;
+glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 30.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);	
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 double deltaTime = 0;
 double lastFrame = 0;
-float cameraSpeed = 100.0f; //相机移动速度
+float  sensitivity = 0.1f;//鼠标移动敏感度
+float cameraSpeed = 10.0f; //相机移动速度
 static float du = 90; //du是视点和x轴的夹角
 static float dv = 0;
 static float OriX = -1, OriY = -1;
@@ -47,12 +50,12 @@ float fov = 45.0f;
 static float r = 10, h = 0.0;   //r是视点绕y轴的半径，h是视点高度即在y轴上的坐标
 static float c = PI / 180.0;    //弧度和角度转换参数
 bool ifCenterPoint = 0;
-bool ifAxiz = 1;
+int ifAxis = 0;
 bool keyState[256];
 float zoom_speed = 0.1f;
-float camera_speed = 5.0f;
-
-unsigned int texture[9];
+float camera_speed = 10.0f;
+string SavePath = "./ScreenShots/screenshot.bmp";
+unsigned int texture[64];
 bool bMouseBase = false;
 bool bMouseHead = false;
 bool bBattery = false;
@@ -66,7 +69,94 @@ Mouse head = Mouse(Vec3(0, 0, 0), HEAD);
 Mouse base = Mouse(Vec3(0, 0, 0), BASE);
 
 GLUnurbsObj* theNurb;
+int objNum = 2;
+int RenderObj[64]; //表示物体是否会被渲染
+int objTex[64];
+int choose = 0; //选中哪个物体
+std::vector<glm::vec3> ObjPos;
+std::vector<glm::vec3> ObjFront;
+std::vector<glm::vec3> ObjUp;
+std::vector<float> ObjSize;
+std::vector<float> ObjPitch;
+std::vector<float> ObjYaw;
+//目前选中物体的参数
+int ifShow = 1;
+glm::vec3 ObjPos_tmp;
+float ObjSize_tmp;
+float ObjPitch_tmp;
+float ObjYaw_tmp;
+int ObjTex_tmp = 0;
+ImportedModel table("./model/table.obj"); //ID 0
+ImportedModel chair("./model/chair.obj"); //ID 1
+void ObjInit() {
+	ObjPos_tmp.x = ObjPos[choose].x;
+	ObjPos_tmp.y = ObjPos[choose].y;
+	ObjPos_tmp.z = ObjPos[choose].z;
+	ObjSize_tmp = ObjSize[choose];
+	ObjPitch_tmp = ObjPitch[choose];
+	ObjYaw_tmp = ObjYaw[choose];
+	ifShow = 1 - RenderObj[choose];
 
+	objTex[0] = 9;
+	objTex[1] = 9;
+}
+void renderObj() {
+
+	ObjPos[choose].x = ObjPos_tmp.x;
+	ObjPos[choose].y = ObjPos_tmp.y;
+	ObjPos[choose].z = ObjPos_tmp.z;
+	ObjSize[choose] = ObjSize_tmp;
+	ObjPitch[choose] = ObjPitch_tmp;
+	ObjYaw[choose] = ObjYaw_tmp;
+	RenderObj[choose] = 1 - ifShow;
+
+	//table
+	if (RenderObj[0] == 0) {
+		if (ObjPitch[0] > 360) ObjPitch[0] -= 360;
+		if (ObjPitch[0] < -360) ObjPitch[0] += 360;
+		if (ObjYaw[0] > 360) ObjYaw[0] -= 360;
+		if (ObjYaw[0] < -360) ObjYaw[0] += 360;
+		Material::SetColor(1, 1, 1);
+		glPushMatrix();
+		glTranslatef(ObjPos[0].x, ObjPos[0].y, ObjPos[0].z);
+		glTranslatef(-4.0, -4.0, 0);//初始化
+		glRotatef(ObjPitch[0], 1, 0, 0);
+		glRotatef(ObjYaw[0], 0, 1, 0);
+		glScalef(ObjSize[0], ObjSize[0], ObjSize[0]);
+		glScalef(0.5, 0.5, 0.5);//初始化
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[objTex[0]]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		table.drawobj();
+		glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+	}
+
+	// chair
+	if (RenderObj[1] == 0) {
+		if (ObjPitch[1] > 360) ObjPitch[1] -= 360;
+		if (ObjPitch[1] < -360) ObjPitch[1] += 360;
+		if (ObjYaw[1] > 360) ObjYaw[1] -= 360;
+		if (ObjYaw[1] < -360) ObjYaw[1] += 360;
+		Material::SetColor(1, 1, 1);
+		glPushMatrix();
+		glTranslatef(ObjPos[1].x, ObjPos[1].y, ObjPos[1].z);
+		glTranslatef(57, -64, -85);//初始化
+		glRotatef(-90, 0, 1, 0);
+		glRotatef(ObjPitch[1], 1, 0, 0);
+		glRotatef(ObjYaw[1], 0, 1, 0);
+		glScalef(ObjSize[1], ObjSize[1], ObjSize[1]);
+		glScalef(0.7, 0.7, 0.7);//初始化
+		glScalef(2.713, 2.713, 2.713);//初始化
+		glScalef(0.5, 0.5, 0.5);//初始化
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[objTex[1]]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		chair.drawobj();
+		glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+	}
+}
 void processMenuEvents(int option) {
 	switch (option) {
 	case PLAY:
@@ -76,6 +166,8 @@ void processMenuEvents(int option) {
 		break;
 	}
 }
+
+
 
 
 void createGLUTMenus() {
@@ -89,23 +181,39 @@ void createGLUTMenus() {
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
+
 void init()
 {
+	for (int i = 0; i < 64; i++) {
+		glm::vec3 temp(0, 0, 0);
+		ObjPos.push_back(temp);
+		temp.z = 1;
+		ObjFront.push_back(temp);
+		temp.z = 0;
+		temp.y = 1;
+		ObjUp.push_back(temp);
+		ObjSize.push_back(1.0f);
+		ObjPitch.push_back(0.0f);
+		ObjYaw.push_back(0.0f);
+	}
+	ObjInit();
 	GLint buf[1], sbuf[1];
 	glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, buf);
 	glGetIntegerv(GL_SAMPLES_ARB, sbuf);
 	glEnable(GL_MULTISAMPLE_ARB);
-
-	glGenTextures(9, texture);
-	texload(0, (char*)"table.bmp");
-	texload(1, (char*)"battery.bmp");
-	texload(2, (char*)"ar.bmp");
-	texload(3, (char*)"nx.bmp");
-	texload(4, (char*)"ny.bmp");
-	texload(5, (char*)"nz.bmp");
-	texload(6, (char*)"px.bmp");
-	texload(7, (char*)"py.bmp");
-	texload(8, (char*)"pz.bmp");
+	glGenTextures(16, texture);
+	texload(0, (char*)"./texture/table.bmp");
+	texload(1, (char*)"./texture/battery.bmp");
+	texload(2, (char*)"./texture/ar.bmp");
+	texload(3, (char*)"./texture/nx.bmp");
+	texload(4, (char*)"./texture/ny.bmp");
+	texload(5, (char*)"./texture/nz.bmp");
+	texload(6, (char*)"./texture/px.bmp");
+	texload(7, (char*)"./texture/py.bmp");
+	texload(8, (char*)"./texture/pz.bmp");
+	texload(9, (char*)"./texture/wood.bmp");
+	texload(10, (char*)"./texture/brick.bmp");
+	texload(11, (char*)"./texture/metal.bmp");
 
 	MousePlate::FillPlates(animation.GetMousePlates());
 
@@ -116,6 +224,65 @@ void init()
 	theNurb = gluNewNurbsRenderer();
 	gluNurbsProperty(theNurb, GLU_SAMPLING_TOLERANCE, 10.0);
 	gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
+
+	//// Bind cube data
+	//VertexArray va_tmp;
+	//va = (VertexArray*)malloc(sizeof(VertexArray));
+	//*va = va_tmp;
+
+	//VertexBuffer tmp_vb(positions, 24 * 8 * sizeof(float));
+	//vb= (VertexBuffer*)malloc(sizeof(VertexBuffer));
+	//*vb = tmp_vb;
+
+	//IndexBuffer tmp_ib(indices, 3 * 12 * sizeof(int));
+	//ib = (IndexBuffer*)malloc(sizeof(IndexBuffer));
+	//*ib = tmp_ib;
+
+	//VertexBufferLayout layout;
+	//layout.Push<float>(3);
+	//layout.Push<float>(3);
+	//layout.Push<float>(2);
+
+	//va->AddBuffer(*vb, layout);
+	//va->Unbind();
+	//vb->Unbind();
+	//ib->Unbind();
+
+
+	// Bind shader
+	//Shader tmp("shader/Cube.shader");
+	//printf_s("%d %d\n", sizeof(tmp), sizeof(Shader));
+	/*shader = (Shader*)malloc(sizeof(tmp));
+	*shader = tmp;*/
+
+	//// Bind texture
+	//Texture texture("texture/brick.jpg");
+	//Texture texture2("texture/brick_normal.jpg");
+	//texture.Bind(0);
+	//texture2.Bind(1);
+	//shader->SetUniform1i("material.diffuse", 0);
+	//shader->SetUniform1i("material.specular", 0);
+	//shader->SetUniform1i("material.normal", 1);
+
+	//shader->SetUniform3f("dirLight.direction", glm::vec3(0.0, -1.0, 0.0));
+	//shader->SetUniform3f("dirLight.ambient", glm::vec3(0.4, 0.4, 0.4));
+	//shader->SetUniform3f("dirLight.diffuse", glm::vec3(1.0, 1.0, 1.0));
+	//shader->SetUniform3f("dirLight.specular", glm::vec3(1.0, 1.0, 1.0));
+	//shader->SetUniform1f("material.shininess", glm::float32(50.0));
+	//Renderer tmp_renderer;
+	//renderer = (Renderer *)malloc(sizeof(Renderer));
+	//*renderer = tmp_renderer;
+
+	//glm::mat4 mvp;
+	//glm::mat4 modelMatrix;
+
+	//// Init modelMatrix
+	//modelMatrix = glm::rotate(modelMatrix, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//shader->SetUniformMat4f("model", modelMatrix);
+
+	//glm::vec4 clear_color(0.45f, 0.55f, 0.60f, 1.00f);
+	//glm::vec4 cube_color(1.0f, 1.0f, 0.00f, 1.00f);
+	//glm::vec3  translation(0, 0, 0);
 }
 
 // 获取并打印模型视图矩阵
@@ -168,15 +335,6 @@ void DrawScene()
 
 	animation.GetMousePlates()[1].DrawMouses();
 
-	//glPushMatrix();
-	////printModelViewMatrix();
-	////glLoadIdentity();
-	//glTranslatef(2.0f, -3.0f, 5.5f);
-	//glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-	//glScalef(0.60f, 0.60f, 0.60f);
-	//head.DrawMouse(HEAD);
-	//base.DrawMouse(BASE);
-	//glPopMatrix();
 }
 
 void DrawEditBar()
@@ -205,7 +363,6 @@ void DrawEditBar()
 
 	Material::SetColor(0.0f, 1.0f, 0.0f);
 	glLineWidth(2.0f);
-	glPushMatrix();
 	glBegin(GL_LINES);
 	glVertex3f(-3.2f, 2.0f, 0.0f);
 	glVertex3f(-4.0f, 2.0f, 0.1f);
@@ -216,7 +373,6 @@ void DrawEditBar()
 	glVertex3f(-3.2f, -0.3f, 0.0f);
 	glVertex3f(-4.0f, -0.3f, 0.1f);
 	glEnd();
-	glPopMatrix();
 }
 
 void reshape(int width, int height)
@@ -242,6 +398,11 @@ void reshape(int width, int height)
 
 void idle()
 {
+	if (bAnim) // 如果需要播放动画
+	{
+		animation.Update(); // 更新动画的状态
+	}
+	glutPostRedisplay(); // 通知GLUT重绘屏幕
 	glutPostRedisplay();
 }
 
@@ -337,7 +498,7 @@ void key(unsigned char k, int x, int y)
 		break;
 	}
 	case 'm': {
-		ifAxiz = !ifAxiz;
+		ifAxis = 1 - ifAxis;
 		break;
 	}
 	case 'z': { //zoom in 放大
@@ -366,15 +527,15 @@ void key(unsigned char k, int x, int y)
 	}
 	case 'f': // 按 'F' 字母键截图
 	{
-		ScreenCapture::captureScreenshot("screenshot.bmp");   //可换成希望保存到的路径和文件名
-		std::cout << "Screenshot saved to screenshot.bmp" << std::endl;
+		ScreenCapture::captureScreenshot(SavePath);   //可换成希望保存到的路径和文件名
+		std::cout << "Screenshot saved to " << SavePath << std::endl;
 		break;
 	}
 	default: break;
 	}
 }
 
-void keyUp (unsigned char k, int x, int y) {
+void keyUp(unsigned char k, int x, int y) {
 	switch (k)
 	{
 		// change perspective
@@ -425,20 +586,18 @@ void mouse(int button, int state, int x, int y)
 			return;
 		if (menu.Hit(x, gHeight - y))
 			return;
-		//printf("%d %d\n", x, y);
-		//printf("viewport: %d %d\n", gWidth, gHeight);
-		if (x * 1.0 / gWidth <= 110 * 1.0 / 800)
+		printf("%d %d\n", x, y);
+		if (x <= 110)
 		{
-			double temp_y = y * 1.0 / gHeight;
-			if (temp_y >= 0 && temp_y <= 86 * 1.0 / 480)
+			if (y >= 0 && y <= 86)
 			{
 				bMouseHead = true;
 			}
-			else if (temp_y <= 175 * 1.0 / 480)
+			else if (y <= 175)
 			{
 				bMouseBase = true;
 			}
-			else if (temp_y <= 252 * 1.0 / 480)
+			else if (y <= 252)
 			{
 				bBattery = true;
 			}
@@ -458,16 +617,15 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 	}
 	du = x - OriX; //鼠标在窗口x轴方向上的增量加到视点与x轴的夹角上，就可以左右转
 	dv = y - OriY;  //鼠标在窗口y轴方向上的改变加到视点y的坐标上，就可以上下转
-	float  sensitivity = 0.1f;
 	du *= sensitivity;
 	dv *= sensitivity;
 	yaw += du;
-	pitch += dv;
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-	
+	pitch -= dv;
+	if (pitch > 80.0f)
+		pitch = 80.0f;
+	if (pitch < -80.0f)
+		pitch = -80.0f;
+
 	glm::vec3 front;
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
@@ -475,6 +633,7 @@ void onMouseMove(int x, int y)   //处理鼠标拖动
 	cameraFront = glm::normalize(front);
 	OriX = x, OriY = y;  //将此时的坐标作为旧值，为下一次计算增量做准备
 }
+
 
 void redraw()
 {
@@ -517,6 +676,10 @@ void redraw()
 	Light::FlushLight();
 	Light::DrawSkyBox();
 	DrawScene();
+	renderObj();
+
+
+
 	if (bAnim)
 	{
 		if (!animation.GetMousePlates()[2].IsEmpty()) {
@@ -534,18 +697,10 @@ void redraw()
 	animation.Update();
 	glPopMatrix();
 
-	Light::FlushEditBarLight();
-
 	if (!bAnim)
 	{
 		// Draw Edit Bar
-		
-		// 以下代码可以排除一个十分奇怪的 bug，请勿删除
-		
-		glPushMatrix();
-		glutSolidCube(1000);
-		glPopMatrix();
-
+		Light::FlushEditBarLight();
 		glPushMatrix();
 		glViewport(0, 0, gWidth, gHeight);
 		glMatrixMode(GL_PROJECTION);
@@ -559,12 +714,6 @@ void redraw()
 		glPopMatrix();
 	}
 
-	//draw view center point
-	renderCenterPoint(gWidth, gHeight, ifCenterPoint);
-
-	//画参考坐标
-	renderAxis(gWidth, gHeight, -pitch, yaw, ifAxiz);
-
 	// Draw 2D UI
 	Material::SetColor(0.0f, 1.0f, 0.0f);
 	glPushMatrix();
@@ -575,21 +724,32 @@ void redraw()
 	glMatrixMode(GL_MODELVIEW);
 	ARabout::Draw();
 	menu.Draw(0, 0);
-	getFPS();
 	glPopMatrix();
 
+	//draw view center point
+	renderCenterPoint(gWidth, gHeight, ifCenterPoint);
+
+	//画参考坐标
+	renderAxis(gWidth, gHeight, pitch, yaw, ifAxis);
 	glutSwapBuffers();
 }
 
+int main_window;
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	glfwInit();
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	glutInitWindowSize(800, 480);
-	int windowHandle = glutCreateWindow("Mouse Assembly Workshop");
+	glutInitWindowSize(gWidth, gHeight);
+	main_window = glutCreateWindow("Mouse Assembly Workshop");
+	GLenum err = glewInit();
+	if (err != GLEW_OK) {
+		return 0;
+	}
 	GenHoleList();
 	init();
+	const GLubyte* version = glGetString(GL_VERSION);
+	printf_s("OpenGL Version: %s\n", version);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
@@ -598,7 +758,10 @@ int main(int argc, char* argv[])
 	glutMouseFunc(mouse);
 	glutMotionFunc(onMouseMove);
 	createGLUTMenus();
-
+	GUIinit();
+	//for (int i = 0; i < 10; i++) {
+	//	printf_s("%f %f %f\n", cube.getVertices()[i][0], cube.getVertices()[i][1], cube.getVertices()[i][2]);
+	//}
 	glutMainLoop();
 	return 0;
 }
