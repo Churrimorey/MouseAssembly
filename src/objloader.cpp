@@ -123,6 +123,7 @@ void ObjLoader::obj_parse(char* file_line) {
 		return;
 	}
 	else if (first_char == 'v') {
+		if (tokenized[1] == 't') return;
 		// Vertex
 		double x = strtod(strtok(NULL, " "), NULL);
 		double y = strtod(strtok(NULL, " "), NULL);

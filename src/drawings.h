@@ -8,7 +8,7 @@
 
 #define PI 3.1415926535
 
-extern unsigned int texture[9];
+extern unsigned int texture[64];
 extern GLint holeList[25];
 extern GLint batterList[25];
 

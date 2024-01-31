@@ -56,7 +56,7 @@ void RobotRightArm::Draw() const {
 
 	glPushMatrix();
 	Material::SetMaterial(Material::Arm);
-	/*GLUquadricObj* cylinder = gluNewQuadric();
+	/*GLUquadricObj                                                                                                                                                                                                                           * cylinder = gluNewQuadric();
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 	glScalef(0.6f, 0.6f, 0.6f);
 	gluCylinder(cylinder, 1.3, 1.3, 7.0, 10, 10);

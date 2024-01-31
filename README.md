@@ -78,9 +78,29 @@ CG project imitating mouse assembly workshop.
 
 当鼠标左键按下时，可以通过移动鼠标进行视角旋转。
 
-### FPS显示
+### GUI
 
-添加在窗口的右上方，在动画实现时可实时监测当前的帧率，做出改进。
+配置相关。
+
+C/C++预处理器添加 GLUIDLL
+
+![image-20240131195503513](./media/image-20240131195503513.png)
+
+在链接器的附加依赖项中添加glui32ddl.lib
+
+![image-20240131195023367](./media/image-20240131195023367.png)
+
+在原先放glut和glew头文件的位置放glui.h，如图。
+
+![image-20240131195756456](./media/image-20240131195756456.png)
+
+在lib中放入lib文件(选择x86或者x64)
+
+![image-20240131195949380](./media/image-20240131195949380.png)
+
+在SysWOW64或者System32中放ddl文件。
+
+![image-20240131200150053](./media/image-20240131200150053.png)
 
 ## 编辑与执行切换
 

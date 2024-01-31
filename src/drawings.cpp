@@ -7,6 +7,7 @@ void Texture_desk()
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	Material::SetColor(1.0f, 1.0f, 1.0f);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glPushMatrix();
 	// glutSolidCube(2.0);
